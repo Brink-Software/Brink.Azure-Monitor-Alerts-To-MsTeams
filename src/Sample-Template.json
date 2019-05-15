@@ -1,0 +1,34 @@
+{
+  "@type": "MessageCard",
+  "@context": "https://schema.org/extensions",
+  "summary": "Issue 176715375",
+  "themeColor": "0078D7",
+  "title": "[[searchResult.type]]: [[searchResult.problemId]]",
+  "sections": [
+    {
+      "facts": [
+        {
+          "name": "Environment:",
+          "value": "[[searchResult.Environment]]"
+        },
+        {
+          "name": "Customer:",
+          "value": "[[searchResult.Customer]]"
+        }
+      ],
+      "text": "[[searchResult.ExceptionDetails]]"
+    }
+  ],
+  "potentialAction": [
+    {
+      "@type": "OpenUri",
+      "name": "View in Portal",
+      "targets": [
+        {
+          "os": "default",
+          "uri": "[[alert.alertContext.LinkToSearchResults]]"
+        }
+      ]
+    }
+  ]
+}
