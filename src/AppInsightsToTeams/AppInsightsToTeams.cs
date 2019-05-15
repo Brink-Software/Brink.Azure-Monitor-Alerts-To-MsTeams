@@ -48,8 +48,8 @@ namespace AppInsightsToTeams
                 .AddEnvironmentVariables()
                 .Build();
 
-            _configValue = (key) => config[$"{context.FunctionName}.{key}]"];
-
+            _configValue = (key) => config[$"{context.FunctionName}.{key}"];
+           
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var alert = JsonConvert.DeserializeObject<dynamic>(requestBody);
             var query = (string)alert.data.alertContext.SearchQuery;
