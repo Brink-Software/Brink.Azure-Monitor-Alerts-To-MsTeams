@@ -88,7 +88,7 @@ namespace AppInsightsToTeams
             _log.LogInformation($"Using template '{templateUri}'");
 
             const string StorageResource = "https://storage.azure.com/";
-            var azureServiceTokenProvider = new AzureServiceTokenProvider("RunAs=App;AppId=1250a484-3b89-48a9-bba7-6213ee72f3b2");
+            var azureServiceTokenProvider = new AzureServiceTokenProvider(string.IsNullOrWhiteSpace(_config["identityClientId"]) ? null : $"RunAs=App;AppId={_config["identityClientId"]}");
             var tokenCredential = new TokenCredential(await azureServiceTokenProvider.GetAccessTokenAsync(StorageResource));
 
             StorageCredentials storageCredentials = new StorageCredentials(tokenCredential);
@@ -130,7 +130,7 @@ namespace AppInsightsToTeams
 
                 _log.LogInformation($"Sending data: {currentMessage}");
 
-                await _httpClient.PostAsync(_config["TeamsWebhookUrl"], new StringContent(currentMessage, Encoding.UTF8, "application/json"));
+                await _httpClient.PostAsync(_config["PostToUrl"], new StringContent(currentMessage, Encoding.UTF8, "application/json"));
             }
         }
     }
