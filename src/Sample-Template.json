@@ -1,7 +1,7 @@
 {
   "@type": "MessageCard",
   "@context": "https://schema.org/extensions",
-  "summary": "Issue 176715375",
+  "summary": "Alert fired for rule [[alert.data.essentials.alertRule]]",
   "themeColor": "0078D7",
   "title": "[[searchResult.type]]: [[searchResult.problemId]]",
   "sections": [
