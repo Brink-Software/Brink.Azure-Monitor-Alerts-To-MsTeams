@@ -1,6 +1,8 @@
 # WizWiz
 WizWiz is an Azure Function (V2) 
 
+https://messagecardplayground.azurewebsites.net/
+
 KeyVaultUrl  
 ApplicationInsightsApiKey  
 ApplicationInsightsAppId  
