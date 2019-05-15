@@ -23,10 +23,10 @@ namespace AppInsightsToTeams
     public class AppInsightsToTeams
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        private IConfigurationRoot _config;
         private ILogger _log;
+        private Func<string, string> _configValue;
 
-        [FunctionName("AppInsightsToTeams")]
+        [FunctionName("AppInsightsAlertsToTeams")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log, ExecutionContext context)
         {
@@ -44,9 +44,11 @@ namespace AppInsightsToTeams
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KeyVaultUrl")))
                 _builder.AddAzureKeyVault(Environment.GetEnvironmentVariable("KeyVaultUrl"), keyVaultClient, new DefaultKeyVaultSecretManager());
 
-            _config = _builder
+            var config = _builder
                 .AddEnvironmentVariables()
                 .Build();
+
+            _configValue = (key) => config[$"{context.FunctionName}.{key}]"];
 
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var alert = JsonConvert.DeserializeObject<dynamic>(requestBody);
@@ -65,9 +67,9 @@ namespace AppInsightsToTeams
 
         private async Task<dynamic> FetchApplicationInsightsQueryResultsAsync(string formattedStart, string formattedEnd, dynamic query)
         {
-            _httpClient.DefaultRequestHeaders.Add("x-api-key", _config["ApplicationInsightsApiKey"]);
+            _httpClient.DefaultRequestHeaders.Add("x-api-key", _configValue.Invoke("ApplicationInsightsApiKey"));
 
-            var getUrl = $"https://api.applicationinsights.io/v1/apps/{_config["ApplicationInsightsAppId"]}/query?timespan={formattedStart}/{formattedEnd}&query={query}";
+            var getUrl = $"https://api.applicationinsights.io/v1/apps/{_configValue.Invoke("ApplicationInsightsAppId")}/query?timespan={formattedStart}/{formattedEnd}&query={query}";
 
             _log.LogInformation($"Attempting to get data from {getUrl}");
 
@@ -83,12 +85,13 @@ namespace AppInsightsToTeams
         {
             _httpClient.DefaultRequestHeaders.Remove("x-api-key");
 
-            var templateUri = $"{_config["MessageCardTemplateBaseUrl"].TrimEnd('/')}/{alert.data.essentials.alertRule}.json";
+            var templateUri = $"{_configValue.Invoke("MessageCardTemplateBaseUrl").TrimEnd('/')}/{alert.data.essentials.alertRule}.json";
 
             _log.LogInformation($"Using template '{templateUri}'");
 
             const string StorageResource = "https://storage.azure.com/";
-            var azureServiceTokenProvider = new AzureServiceTokenProvider(string.IsNullOrWhiteSpace(_config["identityClientId"]) ? null : $"RunAs=App;AppId={_config["identityClientId"]}");
+            var clientId = _configValue.Invoke("identityClientId");
+            var azureServiceTokenProvider = new AzureServiceTokenProvider(string.IsNullOrWhiteSpace(clientId) ? null : $"RunAs=App;AppId={clientId}");
             var tokenCredential = new TokenCredential(await azureServiceTokenProvider.GetAccessTokenAsync(StorageResource));
 
             StorageCredentials storageCredentials = new StorageCredentials(tokenCredential);
@@ -130,7 +133,7 @@ namespace AppInsightsToTeams
 
                 _log.LogInformation($"Sending data: {currentMessage}");
 
-                await _httpClient.PostAsync(_config["PostToUrl"], new StringContent(currentMessage, Encoding.UTF8, "application/json"));
+                await _httpClient.PostAsync(_configValue.Invoke("PostToUrl"), new StringContent(currentMessage, Encoding.UTF8, "application/json"));
             }
         }
     }

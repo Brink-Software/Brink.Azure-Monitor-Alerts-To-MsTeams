@@ -3,20 +3,20 @@
   "@context": "https://schema.org/extensions",
   "summary": "Alert fired for rule [[alert.data.essentials.alertRule]]",
   "themeColor": "0078D7",
-  "title": "[[searchResult.type]]: [[searchResult.problemId]]",
+  "title": "[[searchResult.problemId]]",
   "sections": [
     {
       "facts": [
         {
           "name": "Environment:",
-          "value": "[[searchResult.Environment]]"
+          "value": "[[searchResult.env]]"
         },
         {
           "name": "Customer:",
-          "value": "[[searchResult.Customer]]"
+          "value": "[[searchResult.customer]]"
         }
       ],
-      "text": "[[searchResult.ExceptionDetails]]"
+      "text": "[[searchResult.outerMessage]]"
     }
   ],
   "potentialAction": [
