@@ -1,0 +1,33 @@
+﻿{
+  "schemaId": "azureMonitorCommonAlertSchema",
+  "data": {
+    "essentials": {
+      "alertId": "/subscriptions/eb1658c6-4bc0-4cd9-b4fd-14ec986cceee/providers/Microsoft.AlertsManagement/alerts/bcfba7bd-f918-48fa-aaa1-35be2e63a8f5",
+      "alertRule": "Tesje",
+      "severity": "Sev3",
+      "signalType": "Log",
+      "monitorCondition": "Fired",
+      "monitoringService": "Application Insights",
+      "alertTargetIDs": [
+        "/subscriptions/eb1658c6-4bc0-4cd9-b4fd-14ec986cceee/resourcegroups/apitote/providers/microsoft.insights/components/appinsightstoteams20190506115655"
+      ],
+      "originAlertId": "6460b992-863b-47ea-82f6-5bbbdd27c5f2",
+      "firedDateTime": "2019-05-06T14:18:10.2539211Z",
+      "description": "",
+      "essentialsVersion": "1.0",
+      "alertContextVersion": "1.0"
+    },
+    "alertContext": {
+      "SearchQuery": "exceptions\n| extend customer = \"Customer\"\n| extend env = \"Prosduction\"\n| order by timestamp desc \n| project timestamp , env, customer, problemId , type , outerMessage   , details",
+      "SearchIntervalStartTimeUtc": "5/6/2019 2:13:05 PM",
+      "SearchIntervalEndtimeUtc": "5/6/2019 2:18:05 PM",
+      "ResultCount": 2,
+      "LinkToSearchResults": "https://portal.azure.com#@80274f84-74f8-4845-84fb-e001a5c8abac/blade/Microsoft_OperationsManagementSuite_Workspace/AnalyticsBlade/initiator/AnalyticsShareLinkToQuery/isQueryEditorVisible/true/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2Feb1658c6-4bc0-4cd9-b4fd-14ec986cceee%2FresourceGroups%2Fapitote%2Fproviders%2Fmicrosoft.insights%2Fcomponents%2FAppInsightsToTeams20190506115655%22%7D%5D%7D/query/exceptions%0A%7C%20extend%20customer%20%3D%20%22Customer%22%0A%7C%20extend%20env%20%3D%20%22Prosduction%22%0A%7C%20order%20by%20timestamp%20desc%20%0A%7C%20project%20timestamp%20%2C%20env%2C%20customer%2C%20problemId%20%2C%20type%20%2C%20outerMessage%20%20%20%2C%20details/isQuerybase64Compressed/false/timespanInIsoFormat/2019-05-06T14%3a13%3a05.0000000Z%2f2019-05-06T14%3a18%3a05.0000000Z",
+      "SearchIntervalDurationMin": "5",
+      "SearchIntervalInMinutes": "5",
+      "Threshold": 0,
+      "Operator": "Greater Than",
+      "ApplicationId": "47120b41-e034-41d7-8c48-a411eb07b366"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+﻿{
+  "tables": [
+    {
+      "name": "PrimaryResult",
+      "columns": [
+        {
+          "name": "type",
+          "type": "string"
+        },
+        {
+          "name": "problemId",
+          "type": "string"
+        },
+        {
+          "name": "timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "outerMessage",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "System.Net.Http.HttpRequestException",
+          "System.Net.Http.HttpRequestException at AppInsightsToTeams.AppInsightsToTeams+<FetchApplicationInsightsQueryResultsAsync>d__2.MoveNext",
+          "2019-05-07T10:28:49.5424186Z",
+          "Exception while executing function: AppInsightsToTeams"
+        ]
+      ]
+    }
+  ]
+}
