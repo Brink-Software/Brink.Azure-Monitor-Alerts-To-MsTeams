@@ -31,7 +31,7 @@ It is important to [create a webhook action](https://docs.microsoft.com/en-us/az
 
 The Azure Function needs to be able to connect to an azure storage account to access a json file containing the message card definition that will be posted to the configured Microsoft Teams channel. In order to do that withouth having to configure secrets in the code or in the configuration this function makes use of [Azure Managed Identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview). 
 
-Assign a managed identity to the Azure Function. You can either use a new or existing user-assigned managed identity or a system managed identity. See [the documentation](https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity) for a how-to. Note the object id of the managed identity, it will be used in another step.  
+Assign a managed identity to the Azure Function. You can either use a new or existing user-assigned managed identity or a system managed identity. See [the documentation](https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity) for a how-to. In case of a user-assigned managed identity note the client id as it will be used in another step.  
 
 #### Configure the storage account
 
@@ -43,9 +43,16 @@ Create a message card template and store it in the container of the blob storage
 
 #### Configure the Azure Function
 
-It is now time to configure the Azure Function deployed [previously](#Deploy-the-Azure-Function). [Configure the application settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings) with these settings:
+It is now time to configure the Azure Function deployed [previously](#Deploy-the-Azure-Function). Create the following [application settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings):
 
-
+|Application Setting|Description|
+|---|---|
+|AppInsightsAlertsToTeams.KeyVaultUrl|   |
+|AppInsightsAlertsToTeams.ApplicationInsightsApiKey|The API key of the Application Insights Resource used for the alerts.|
+|AppInsightsAlertsToTeams.ApplicationInsightsAppId|The App Id  of the Application Insights Resource used for the alerts.|
+|AppInsightsAlertsToTeams.MessageCardTemplateBaseUrl|The url of the Azure Blob Storage container.|
+|AppInsightsAlertsToTeams.PostToUrl|The url of the Microsoft Teams webhook connector.|
+|AppInsightsAlertsToTeams.identityClientId|The client id of the user-assigned Managed Identity if applicable.|
 
 https://messagecardplayground.azurewebsites.net/
 
