@@ -39,7 +39,7 @@ The Azure Function uses a storage account to download a template that will repre
 
 #### Create template for the Teams message
 
-Create a message card template and store it in the container of the blob storage account configured in the previous step. Details about creating the template is found [here](#create-message-template)
+Create a message card template and store it in the container of the blob storage account configured in the previous step. A guide creating the template is found [here](#create-message-template).
 
 #### Configure the Azure Function
 
