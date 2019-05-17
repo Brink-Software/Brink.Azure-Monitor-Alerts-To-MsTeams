@@ -15,11 +15,11 @@ The steps involved are:
 
 #### Deploy the Azure Function
 
-Deploy the Azure Function contained in this repository. Since it is a http triggered function make note of the function url as it is needed in the another step.
+Deploy the Azure Function contained in this repository. Since it is a http triggered function make note of the function url as it is needed in another step.
 
 #### Configuring the Microsoft Teams channel connector
 
-Create and configure an incoming webhook connector as outlined [in the documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/connectors/connectors-using#setting-up-a-custom-incoming-webhook). Make note of the webhook url as it is needed in another step later.
+Create and configure an incoming webhook connector as outlined [in the documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/connectors/connectors-using#setting-up-a-custom-incoming-webhook). Make note of the webhook url as it is needed in another step.
 
 #### Create an Application Insights log alert
 
@@ -31,14 +31,19 @@ It is important to [create a webhook action](https://docs.microsoft.com/en-us/az
 
 The Azure Function needs to be able to connect to an azure storage account to access a json file containing the message card definition that will be posted to the configured Microsoft Teams channel. In order to do that withouth having to configure secrets in the code or in the configuration this function makes use of [Azure Managed Identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview). 
 
+Assign a managed identity to the Azure Function. You can either use a new or existing user-assigned managed identity or a system managed identity. See [the documentation](https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity) for a how-to. Note the object id of the managed identity, it will be used in another step.  
+
 #### Configure the storage account
+
+The Azure Function uses a storage account to download a template that will represent a message card that is send to Microsoft Teams. Give the managed identity assigned in the previous step read permissions to the blob storage. Make sure the storage account has a blob storage container the Azure Function can use.
+
 #### Create template for the Teams message
+
+Create a message card template and store it in the container of the blob storage account configured in the previous step. Details about creating the template is found [here](#create-message-template)
+
 #### Configure the Azure Function
 
-
-
-
-After deploying the function to an Azure Function App v2 [configure the application settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings) with these settings:
+It is now time to configure the Azure Function deployed [previously](#Deploy-the-Azure-Function). [Configure the application settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings) with these settings:
 
 
 
