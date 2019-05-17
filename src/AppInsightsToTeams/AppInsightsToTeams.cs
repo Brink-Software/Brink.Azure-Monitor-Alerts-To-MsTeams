@@ -17,6 +17,7 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.Auth;
+using System.Diagnostics;
 
 namespace AppInsightsToTeams
 {
@@ -40,6 +41,11 @@ namespace AppInsightsToTeams
             var _builder = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
+
+            if (Debugger.IsAttached)
+            {
+                _builder.AddUserSecrets<AppInsightsToTeams>();
+            }
 
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KeyVaultUrl")))
                 _builder.AddAzureKeyVault(Environment.GetEnvironmentVariable("KeyVaultUrl"), keyVaultClient, new DefaultKeyVaultSecretManager());
