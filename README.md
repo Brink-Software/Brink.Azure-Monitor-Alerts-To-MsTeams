@@ -1,5 +1,9 @@
 # Overview
-WizWiz is an Azure Function (V2) 
+WizWiz is an http triggered Azure Function (V2) that posts a notification using message card in a designated Microsoft Teams channel when an Application Insights log alert is fired:
+
+
+
+The design of the notification is flexible and is based on a template.
 
 ## Getting started
 
@@ -52,15 +56,46 @@ It is now time to configure the Azure Function deployed [previously](#Deploy-the
 |AppInsightsAlertsToTeams.ApplicationInsightsAppId|The App Id  of the Application Insights Resource used for the alerts.|
 |AppInsightsAlertsToTeams.MessageCardTemplateBaseUrl|The url of the Azure Blob Storage container.|
 |AppInsightsAlertsToTeams.PostToUrl|The url of the Microsoft Teams webhook connector.|
-|AppInsightsAlertsToTeams.identityClientId|The client id of the user-assigned Managed Identity if applicable.|
+|AppInsightsAlertsToTeams.IdentityClientId|The client id of the user-assigned Managed Identity if applicable.|
+
+An example configuration looks like this:
+
+```
+  ...
+  {
+    "name": "ApplicationInsightsApiKey",
+    "value": "vwnubeek5gqf3buonnwfpdgcpaalhymlrzw7subs",
+    "slotSetting": false
+  },
+  {
+    "name": "ApplicationInsightsAppId",
+    "value": "47120b41-e034-41d7-8c48-a411eb07b366",
+    "slotSetting": false
+  },
+  {
+    "name": "IdentityClientId",
+    "value": "1250a484-3b89-48a9-bba7-6213fe72f3b4",
+    "slotSetting": false
+  },
+  {
+    "name": "MessageCardTemplateBaseUrl",
+    "value": "https://myblobstorage.blob.core.windows.net/templates",
+    "slotSetting": false
+  },
+  {
+    "name": "PostToUrl",
+    "value": "https://outlook.office.com/webhook/88b6bcb7-8d51-4e83-877c-e72b1250456d@4d2324cf4-5d8c-4b4f-8e15-3b6026f4518c/IncomingWebhook/edfecdaaf410354ab5c65f5f7aea253a/7f4b9854-9bcc-46cf-9a53-60fa2842dce9",
+    "slotSetting": false
+  },
+  ...
+```
+
+
+
 
 https://messagecardplayground.azurewebsites.net/
 
-AppInsightsAlertsToTeams.KeyVaultUrl  
-AppInsightsAlertsToTeams.ApplicationInsightsApiKey  
-AppInsightsAlertsToTeams.ApplicationInsightsAppId  
-AppInsightsAlertsToTeams.MessageCardTemplateBaseUrl  
-AppInsightsAlertsToTeams.PostToUrl  
+
 
 [[alert.data.essentials.alertRule]]  
 [[alert.data.essentials.alertRule]]  
