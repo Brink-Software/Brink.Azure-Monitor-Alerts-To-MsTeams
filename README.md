@@ -25,7 +25,7 @@ Create and configure an incoming webhook connector as outlined [in the documenta
 
 Create a new application insights log alert based on a custom Kusto query as outlined [in the documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-log).
 
-It is important to [create a webhook action](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-log-webhook) for the log alert rule, based on the [*common alert schema*](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema). Use the url of the azure function as url of the webhook.
+It is important to [create a webhook action](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-log-webhook) for the log alert rule, based on the [*common alert schema*](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema). Use the [url of the azure function](#deploy-the-azure-function) as url of the webhook.
 
 #### Provision a Managed Identity
 
