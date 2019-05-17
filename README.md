@@ -3,11 +3,11 @@ WizWiz is an Azure Function (V2)
 
 https://messagecardplayground.azurewebsites.net/
 
-KeyVaultUrl  
-ApplicationInsightsApiKey  
-ApplicationInsightsAppId  
-MessageCardTemplateBaseUrl  
-PostToUrl  
+AppInsightsAlertsToTeams.KeyVaultUrl  
+AppInsightsAlertsToTeams.ApplicationInsightsApiKey  
+AppInsightsAlertsToTeams.ApplicationInsightsAppId  
+AppInsightsAlertsToTeams.MessageCardTemplateBaseUrl  
+AppInsightsAlertsToTeams.PostToUrl  
 
 [[alert.data.essentials.alertRule]]  
 [[alert.data.essentials.alertRule]]  
