@@ -1,9 +1,9 @@
 # Overview
 WizWiz is an http triggered Azure Function (V2) that posts a notification using message card in a designated Microsoft Teams channel when an Application Insights log alert is fired:
 
+![GitHub Logo](/assets/alert-message.png)
 
-
-The design of the notification is flexible and is based on a template.
+The design of the notification is flexible and is based on a [template](#creating-a-template).
 
 ## Getting started
 
@@ -51,12 +51,12 @@ It is now time to configure the Azure Function deployed [previously](#Deploy-the
 
 |Application Setting|Description|
 |---|---|
-|AppInsightsAlertsToTeams.KeyVaultUrl|   |
-|AppInsightsAlertsToTeams.ApplicationInsightsApiKey|The API key of the Application Insights Resource used for the alerts.|
-|AppInsightsAlertsToTeams.ApplicationInsightsAppId|The App Id  of the Application Insights Resource used for the alerts.|
-|AppInsightsAlertsToTeams.MessageCardTemplateBaseUrl|The url of the Azure Blob Storage container.|
-|AppInsightsAlertsToTeams.PostToUrl|The url of the Microsoft Teams webhook connector.|
-|AppInsightsAlertsToTeams.IdentityClientId|The client id of the user-assigned Managed Identity if applicable.|
+|AppInsightsAlertsToTeams-KeyVaultUrl|The url of an Azure KeyVault. If specified other settings like the api key can be retrieved from the Key Vault|
+|AppInsightsAlertsToTeams-ApplicationInsightsApiKey|The API key of the Application Insights Resource used for the alerts.|
+|AppInsightsAlertsToTeams-ApplicationInsightsAppId|The App Id  of the Application Insights Resource used for the alerts.|
+|AppInsightsAlertsToTeams-MessageCardTemplateBaseUrl|The url of the Azure Blob Storage container.|
+|AppInsightsAlertsToTeams-PostToUrl|The url of the Microsoft Teams webhook connector.|
+|AppInsightsAlertsToTeams-IdentityClientId|The client id of the user-assigned Managed Identity if applicable.|
 
 An example configuration looks like this:
 
@@ -90,6 +90,7 @@ An example configuration looks like this:
   ...
 ```
 
+## Creating a template
 
 
 
