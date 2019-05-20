@@ -1,5 +1,5 @@
 # Overview
-WizWiz is an http triggered Azure Function (V2) that posts a notification using message card in a designated Microsoft Teams channel when an Application Insights log alert is fired:
+Application-Insights-To-Teams-Function is an http triggered Azure Function (V2) that posts a notification using message card in a designated Microsoft Teams channel when an Application Insights log alert is fired:
 
 ![GitHub Logo](/assets/alert-message.png)
 
