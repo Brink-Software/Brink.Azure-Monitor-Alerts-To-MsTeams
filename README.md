@@ -68,7 +68,7 @@ It is now time to configure the Azure Function deployed [previously](#Deploy-the
 
 An example configuration looks like this:
 
-```
+```json
   ...
   {
     "name": "AppInsightsAlertsToTeams-ApplicationInsightsApiKey",
@@ -102,9 +102,8 @@ An example configuration looks like this:
 
 Unfortunately the webhook integration of Microsoft Teams does not yet support Adaptive Cards. Therefore, the message that is posted to Application Insights is based on [message cards](https://docs.microsoft.com/en-us/outlook/actionable-messages/message-card-reference). To visually create a template there is a [website](https://messagecardplayground.azurewebsites.net/) you can use.
 
+In the template the following texts will be replaced with actual values of the Application Insights Alerts:
 
-
-[[alert.data.essentials.alertRule]]  
 [[alert.data.essentials.alertRule]]  
 [[alert.data.essentials.description]]  
 [[alert.data.essentials.severity]]  
@@ -116,4 +115,86 @@ Unfortunately the webhook integration of Microsoft Teams does not yet support Ad
 [[alert.alertContext.SearchIntervalStartTimeUtc]]  
 [[alert.alertContext.SearchIntervalEndtimeUtc]]  
 
-[[searchResult.{(string)column.name}]]
+An example incoming alert looks like this:
+
+```json
+{
+  "schemaId": "azureMonitorCommonAlertSchema",
+  "data": {
+    "essentials": {
+      "alertId": "/subscriptions/xxxxxxxxxxxxx/providers/Microsoft.AlertsManagement/alerts/xxxxxxxxxx",
+      "alertRule": "MyAlertRuleName",
+      "severity": "Sev3",
+      "signalType": "Log",
+      "monitorCondition": "Fired",
+      "monitoringService": "Application Insights",
+      "alertTargetIDs": [
+        "/subscriptions/xxxxxxxxxxxx/resourcegroups/xxxxxx/providers/microsoft.insights/components/xxxxxxxxxxxx"
+      ],
+      "originAlertId": "6460b992-863b-47ea-82f6-5bbbdd27c5f2",
+      "firedDateTime": "2019-05-06T14:18:10.2539211Z",
+      "description": "",
+      "essentialsVersion": "1.0",
+      "alertContextVersion": "1.0"
+    },
+    "alertContext": {
+      "SearchQuery": "exceptions\n| extend customer = \"Customer\"\n| extend env = \"Production\"\n| order by timestamp desc \n| project timestamp , env, customer, problemId , type , outerMessage   , details",
+      "SearchIntervalStartTimeUtc": "5/6/2019 2:13:05 PM",
+      "SearchIntervalEndtimeUtc": "5/6/2019 2:18:05 PM",
+      "ResultCount": 2,
+      "LinkToSearchResults": "https://portal.azure.com#@80274f8xxxxxxxxxx",
+      "SearchIntervalDurationMin": "5",
+      "SearchIntervalInMinutes": "5",
+      "Threshold": 0,
+      "Operator": "Greater Than",
+      "ApplicationId": "xxxxxxxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+Given the example above, a template may look like this:
+
+```json
+{
+  "@type": "MessageCard",
+  "@context": "https://schema.org/extensions",
+  "summary": "Alert fired for rule [[alert.data.essentials.alertRule]]",
+  "themeColor": "0078D7",
+  "title": "[[searchResult.problemId]]",
+  "sections": [
+    {
+      "facts": [
+        {
+          "name": "Environment:",
+          "value": "[[searchResult.env]]"
+        },
+        {
+          "name": "Customer:",
+          "value": "[[searchResult.customer]]"
+        }
+      ],
+      "text": "[[searchResult.outerMessage]]"
+    }
+  ],
+  "potentialAction": [
+    {
+      "@type": "OpenUri",
+      "name": "View in Portal",
+      "targets": [
+        {
+          "os": "default",
+          "uri": "[[alert.alertContext.LinkToSearchResults]]"
+        }
+      ]
+    }
+  ]
+}
+```
+ A special text substitution is done for the result of the Application Insights query. Any template text with the format [[searchResult.ColumnName}]] will be replaced with the actual result value. Given the above examples the query will result in a table with the columns timestamp, env, customer, problemId, type, outerMessage, details as defined by the query triggering the alert:
+ 
+ > "exceptions\n| extend customer = \"Customer\"\n| extend env = \"Production\"\n| order by timestamp desc \n| project timestamp, env, customer, problemId, type, outerMessage, details"
+ 
+For example, the text "[[searchResult.outerMessage]]" will be replaced with the actual value of the `outerMessage` column of the query result.
+
+For each row of the result a message is posted to Microsoft Teams.
