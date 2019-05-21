@@ -47,15 +47,21 @@ namespace AppInsightsToTeams
                 _builder.AddUserSecrets<AppInsightsToTeams>();
             }
 
-            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KeyVaultUrl")))
-                _builder.AddAzureKeyVault(Environment.GetEnvironmentVariable("KeyVaultUrl"), keyVaultClient, new DefaultKeyVaultSecretManager());
-
             var config = _builder
                 .AddEnvironmentVariables()
                 .Build();
 
-            _configValue = (key) => config[$"{context.FunctionName}.{key}"];
-           
+            _configValue = (key) => config[$"{context.FunctionName}-{key}"];
+
+            var keyVaultUrl = _configValue.Invoke("KeyVaultUrl");
+            if (!string.IsNullOrWhiteSpace(keyVaultUrl))
+                _builder.AddAzureKeyVault(keyVaultUrl, keyVaultClient, new DefaultKeyVaultSecretManager());
+
+            config = _builder
+                .Build();
+
+            _configValue = (key) => config[$"{context.FunctionName}-{key}"];
+
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var alert = JsonConvert.DeserializeObject<dynamic>(requestBody);
             var query = (string)alert.data.alertContext.SearchQuery;
@@ -81,7 +87,7 @@ namespace AppInsightsToTeams
 
             var rawResult = await _httpClient.GetStringAsync(getUrl);
 
-            _log.LogInformation($"Data received: {rawResult}");
+            _log.LogDebug($"Data received: {rawResult}");
 
             var result = JsonConvert.DeserializeObject<dynamic>(rawResult);
             return result;
@@ -137,7 +143,7 @@ namespace AppInsightsToTeams
                         .Replace($"[[searchResult.{(string)column.name}]]", (string)row[columns.IndexOf((string)column.name)]);
                 }
 
-                _log.LogInformation($"Sending data: {currentMessage}");
+                _log.LogDebug($"Sending data: {currentMessage}");
 
                 await _httpClient.PostAsync(_configValue.Invoke("PostToUrl"), new StringContent(currentMessage, Encoding.UTF8, "application/json"));
             }
