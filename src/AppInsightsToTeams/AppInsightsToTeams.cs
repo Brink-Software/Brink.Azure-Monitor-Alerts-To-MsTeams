@@ -71,17 +71,17 @@ namespace AppInsightsToTeams
             var formattedStart = queryStart.ToString("yyyy-MM-dd HH:mm:ss");
             var formattedEnd = queryEnd.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var result = await FetchApplicationInsightsQueryResultsAsync(formattedStart, formattedEnd, query.Replace("\n", string.Empty));
+            var result = await FetchApplicationInsightsQueryResultsAsync(formattedStart, formattedEnd, (string)alert.data.alertContext.ApplicationId, query.Replace("\n", string.Empty));
             await PostApplicationInsightsQueryResultsToTeamsAsync(result, alert, formattedStart, formattedEnd);
 
             return new OkResult();
         }
 
-        private async Task<dynamic> FetchApplicationInsightsQueryResultsAsync(string formattedStart, string formattedEnd, dynamic query)
+        private async Task<dynamic> FetchApplicationInsightsQueryResultsAsync(string formattedStart, string formattedEnd, string appId, dynamic query)
         {
-            _httpClient.DefaultRequestHeaders.Add("x-api-key", _configValue.Invoke("ApplicationInsightsApiKey"));
+            _httpClient.DefaultRequestHeaders.Add("x-api-key", _configValue.Invoke($"ApiKey-{appId}"));
 
-            var getUrl = $"https://api.applicationinsights.io/v1/apps/{_configValue.Invoke("ApplicationInsightsAppId")}/query?timespan={formattedStart}/{formattedEnd}&query={query}";
+            var getUrl = $"https://api.applicationinsights.io/v1/apps/{appId}/query?timespan={formattedStart}/{formattedEnd}&query={query}";
 
             _log.LogInformation($"Attempting to get data from {getUrl}");
 
