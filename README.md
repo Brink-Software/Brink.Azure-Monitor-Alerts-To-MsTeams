@@ -60,9 +60,9 @@ It is now time to configure the Azure Function deployed [previously](#Deploy-the
 |Application Setting|Description|
 |---|---|
 |AppInsightsAlertsToTeams-KeyVaultUrl|The url of an Azure KeyVault. If specified other settings like the api key can be retrieved from the Key Vault|
-|AppInsightsAlertsToTeams-ApiKey-xxxx-xxxx-xxxx-xxxx|The API key of the Application Insights Resource used for the alerts where xxx is the application id.|
+|AppInsightsAlertsToTeams-ApiKey-xxxx-xxxx-xxxx-xxxx|The API key of the Application Insights Resource used for the alerts where xxx is the Application Insights application id.|
 |AppInsightsAlertsToTeams-MessageCardTemplateBaseUrl|The url of the Azure Blob Storage container.|
-|AppInsightsAlertsToTeams-PostToUrl|The url of the Microsoft Teams webhook connector.|
+|AppInsightsAlertsToTeams-PostToUrl-xxxx-xxxx-xxxx-xxxx|The url of the Microsoft Teams webhook connector where xxx is the Application Insights application id.|
 |AppInsightsAlertsToTeams-IdentityClientId|The client id of the user-assigned Managed Identity used to access blob storage if applicable.|
 
 An example configuration looks like this:
