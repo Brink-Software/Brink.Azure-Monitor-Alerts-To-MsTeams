@@ -145,7 +145,8 @@ namespace AppInsightsToTeams
 
                 _log.LogDebug($"Sending data: {currentMessage}");
 
-                await _httpClient.PostAsync(_configValue.Invoke("PostToUrl"), new StringContent(currentMessage, Encoding.UTF8, "application/json"));
+                var appId = (string) alert.data.alertContext.ApplicationId;
+                await _httpClient.PostAsync(_configValue.Invoke($"PostToUrl-{appId}"), new StringContent(currentMessage, Encoding.UTF8, "application/json"));
             }
         }
     }
