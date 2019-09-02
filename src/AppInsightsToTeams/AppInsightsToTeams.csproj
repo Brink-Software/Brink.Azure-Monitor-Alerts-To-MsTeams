@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />
+    <PackageReference Include="System.Globalization" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
