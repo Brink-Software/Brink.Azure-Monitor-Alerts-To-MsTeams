@@ -65,8 +65,8 @@ namespace AppInsightsToTeams
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var alert = JsonConvert.DeserializeObject<dynamic>(requestBody);
             var query = (string)alert.data.alertContext.SearchQuery;
-            var queryStart = DateTime.ParseExact((string)alert.data.alertContext.SearchIntervalStartTimeUtc, @"M\/d\/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None);
-            var queryEnd = DateTime.ParseExact((string)alert.data.alertContext.SearchIntervalEndtimeUtc, @"M\/d\/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            var queryStart = DateTime.ParseExact((string)alert.data.alertContext.SearchIntervalStartTimeUtc, @"MM\/dd\/yyyy hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            var queryEnd = DateTime.ParseExact((string)alert.data.alertContext.SearchIntervalEndtimeUtc, @"MM\/dd\/yyyy hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
 
             var formattedStart = queryStart.ToString("yyyy-MM-dd HH:mm:ss");
             var formattedEnd = queryEnd.ToString("yyyy-MM-dd HH:mm:ss");
