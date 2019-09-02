@@ -26,6 +26,7 @@ namespace AppInsightsToTeams
         private readonly HttpClient _httpClient = new HttpClient();
         private ILogger _log;
         private Func<string, string> _configValue;
+        private readonly CultureInfo cultureInfo = new CultureInfo("en-US");
 
         [FunctionName("AppInsightsAlertsToTeams")]
         public async Task<IActionResult> Run(
@@ -62,11 +63,16 @@ namespace AppInsightsToTeams
 
             _configValue = (key) => config[$"{context.FunctionName}-{key}"];
 
-            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            string requestBody;
+            using (var streamReader = new StreamReader(req.Body))
+            {
+                requestBody = await streamReader.ReadToEndAsync();
+            }
+
             var alert = JsonConvert.DeserializeObject<dynamic>(requestBody);
             var query = (string)alert.data.alertContext.SearchQuery;
-            var queryStart = DateTime.ParseExact((string)alert.data.alertContext.SearchIntervalStartTimeUtc, @"MM\/dd\/yyyy hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
-            var queryEnd = DateTime.ParseExact((string)alert.data.alertContext.SearchIntervalEndtimeUtc, @"MM\/dd\/yyyy hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
+            var queryStart = DateTime.Parse((string)alert.data.alertContext.SearchIntervalStartTimeUtc, cultureInfo);
+            var queryEnd = DateTime.Parse((string)alert.data.alertContext.SearchIntervalEndtimeUtc, cultureInfo);
 
             var formattedStart = queryStart.ToString("yyyy-MM-dd HH:mm:ss");
             var formattedEnd = queryEnd.ToString("yyyy-MM-dd HH:mm:ss");
@@ -106,7 +112,7 @@ namespace AppInsightsToTeams
             var azureServiceTokenProvider = new AzureServiceTokenProvider(string.IsNullOrWhiteSpace(clientId) ? null : $"RunAs=App;AppId={clientId}");
             var tokenCredential = new TokenCredential(await azureServiceTokenProvider.GetAccessTokenAsync(StorageResource));
 
-            StorageCredentials storageCredentials = new StorageCredentials(tokenCredential);
+            var storageCredentials = new StorageCredentials(tokenCredential);
             var blob = new CloudBlockBlob(new Uri(templateUri), storageCredentials);
             var cardTemplate = await blob.DownloadTextAsync();
 
