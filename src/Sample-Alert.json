@@ -3,7 +3,7 @@
   "data": {
     "essentials": {
       "alertId": "/subscriptions/xxxxxxxxxxxxx/providers/Microsoft.AlertsManagement/alerts/xxxxxxxxxx",
-      "alertRule": "Tesje",
+      "alertRule": "Test Alert Rule",
       "severity": "Sev3",
       "signalType": "Log",
       "monitorCondition": "Fired",
@@ -27,7 +27,7 @@
       "SearchIntervalInMinutes": "5",
       "Threshold": 0,
       "Operator": "Greater Than",
-      "ApplicationId": "xxxxxxxxxxxxxxxxxxxx"
+      "ApplicationId": "6460b992-863b-47ea-82f6-5bbbdd27c5f2"
     }
   }
 }

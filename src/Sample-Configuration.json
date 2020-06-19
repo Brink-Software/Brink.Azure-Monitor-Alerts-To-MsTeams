@@ -1,0 +1,86 @@
+  [
+    {
+      "Type": "Application Insights",
+      "AlertId": "/subscriptions/xxxxxxxxxxxxx/providers/Microsoft.AlertsManagement/alerts/xxxxxxxxxx",
+      "Identifier": "Put something here to identify what resource is involved in the configuration",
+      "AppInsightsId": "47120b41-e034-41d7-8c48-a411eb07b366",
+      "AppInsightsApiKey": "vwnubeek5gqf3buonnwfpdgcpaalhymlrzw7subs",
+      "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/45b6bcb7-8d51-4e83-877c-e72b1250456d@4d2324cf4-5d8c-4b4f-8e15-3b6026f4518c/IncomingWebhook/edfecdaaf410354ab5c65f5f7aea253a/7f4b9854-9bcc-46cf-9a53-60fa2842dce9",
+      "TeamsMessageTemplate": {
+        "@type": "MessageCard",
+        "@context": "https://schema.org/extensions",
+        "summary": "Alert fired for rule [[alert.data.essentials.alertRule]]",
+        "themeColor": "0078D7",
+        "title": "[[searchResult.problemId]]",
+        "sections": [
+          {
+            "facts": [
+              {
+                "name": "Environment:",
+                "value": "[[searchResult.env]]"
+              },
+              {
+                "name": "Customer:",
+                "value": "[[searchResult.customer]]"
+              }
+            ],
+            "text": "[[searchResult.outerMessage]]"
+          }
+        ],
+        "potentialAction": [
+          {
+            "@type": "OpenUri",
+            "name": "View in Portal",
+            "targets": [
+              {
+                "os": "default",
+                "uri": "[[alert.alertContext.LinkToSearchResults]]"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Type": "Application Insights",
+      "AlertId\": \"/subscriptions/xxxxxxxxxxxxx/providers/Microsoft.AlertsManagement/alerts/xxxxxxxxxx\",": null,
+      "Identifier": "App Insight Resource for Service XYZ - Production",
+      "AppInsightsId": "62430b41-e034-41d7-8c48-a411eb07b366",
+      "AppInsightsApiKey": "ghtgweek5gqf3buonnwfpdgcpaalhymlrzw7subs",
+      "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/88b6bcb7-8d51-4e83-877c-e72b1250456d@4d2324cf4-5d8c-4b4f-8e15-3b6026f4518c/IncomingWebhook/edfecdaaf410354ab5c65f5f7aea253a/7f4b9854-9bcc-46cf-9a53-60fa2842dce9",
+      "TeamsMessageTemplate": {
+        "@type": "MessageCard",
+        "@context": "https://schema.org/extensions",
+        "summary": "Alert fired for rule [[alert.data.essentials.alertRule]]",
+        "themeColor": "0078D7",
+        "title": "[[searchResult.problemId]]",
+        "sections": [
+          {
+            "facts": [
+              {
+                "name": "Environment:",
+                "value": "[[searchResult.env]]"
+              },
+              {
+                "name": "Customer:",
+                "value": "[[searchResult.customer]]"
+              }
+            ],
+            "text": "[[searchResult.outerMessage]]"
+          }
+        ],
+        "potentialAction": [
+          {
+            "@type": "OpenUri",
+            "name": "View in Portal",
+            "targets": [
+              {
+                "os": "default",
+                "uri": "[[alert.alertContext.LinkToSearchResults]]"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
