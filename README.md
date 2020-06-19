@@ -1,5 +1,5 @@
 # Overview
-Application-Insights-To-Teams-Function is an http triggered Azure Function (V2) that posts a notification using message card in a designated Microsoft Teams channel when an Application Insights log alert is fired:
+This repo contains an http triggered Azure Function (V2) that posts a notification using message card in a designated Microsoft Teams channel when an Azure Monitor alert is fired:
 
 ![GitHub Logo](/assets/alert-message.png)
 
@@ -192,3 +192,5 @@ Given the example above, a template may look like this:
 For example, the text "[[searchResult.outerMessage]]" will be replaced with the actual value of the `outerMessage` column of the query result.
 
 For each row of the result a message is posted to Microsoft Teams.
+
+https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions
