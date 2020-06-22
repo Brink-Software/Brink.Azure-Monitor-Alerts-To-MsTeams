@@ -1,30 +1,31 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models;
+using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models;
 using AzureMonitorAlertToTeams.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
+namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
 {
-    public class ApplicationInsightsAlertProcessor : IAlertProcessor
+    public class LogAnalyticsAlertProcessor : IAlertProcessor
     {
         private readonly ILogger _log;
         private readonly HttpClient _httpClient;
 
-        public ApplicationInsightsAlertProcessor(ILogger log, HttpClient httpClient)
+        public LogAnalyticsAlertProcessor(ILogger log, HttpClient httpClient)
         {
             _log = log;
             _httpClient = httpClient;
         }
 
-        public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
+        public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration,  Alert alert)
         {
             var configuration = JsonConvert.DeserializeObject<Configuration>(alertConfiguration.Context.ToString());
             var alertContext = JsonConvert.DeserializeObject<AlertContext>(alert.Data.AlertContext.ToString());
             var result = await FetchLogQueryResultsAsync(configuration, alertContext);
-
+           
             teamsMessageTemplate = teamsMessageTemplate
                 .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString())
                 .Replace("[[alert.alertContext.Operator]]", alertContext.Operator)
@@ -34,7 +35,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
                 .Replace("[[alert.alertContext.SearchIntervalEndtimeUtc]]", alertContext.FormattedEndDateTime)
                 .Replace("[[alert.alertContext.AlertType]]", alertContext.AlertType)
                 .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString())
-                .Replace("[[alert.alertContext.ApplicationId]]", alertContext.ApplicationId.ToString())
+                .Replace("[[alert.alertContext.WorkspaceId]]", alertContext.WorkspaceId)
                 .Replace("[[alert.alertContext.ResultCount]]", alertContext.ResultCount.ToString())
                 .Replace("[[alert.alertContext.LinkToFilteredSearchResultsApi]]", alertContext.LinkToFilteredSearchResultsApi.ToString())
                 .Replace("[[alert.alertContext.LinkToFilteredSearchResultsUi]]", alertContext.LinkToFilteredSearchResultsUi.ToString())
@@ -42,14 +43,12 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
                 .Replace("[[alert.alertContext.LinkToSearchResultsApi]]", alertContext.LinkToSearchResultsApi.ToString())
                 .Replace("[[alert.alertContext.SearchQuery]]", alertContext.SearchQuery);
 
-            foreach (var dimension in alertContext.Dimensions)
+            foreach (var configurationItem in alertContext.AffectedConfigurationItems)
             {
-                var index = Array.IndexOf(alertContext.Dimensions, dimension) + 1;
+                var index = alertContext.AffectedConfigurationItems.IndexOf(configurationItem) + 1;
 
                 teamsMessageTemplate = teamsMessageTemplate
-                    .Replace($"[[alert.alertContext.Dimensions[{index}].Name]]", dimension.Name)
-                    .Replace($"[[alert.alertContext.Dimensions[{index}].Value]]", dimension.Value);
-
+                    .Replace($"[[alert.alertContext.AffectedConfigurationItems[{index}]]]", configurationItem);
             }
 
             foreach (var table in result.Tables)
@@ -74,9 +73,21 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
 
         private async Task<ResultSet> FetchLogQueryResultsAsync(Configuration alertConfiguration, AlertContext alertContext)
         {
-            _httpClient.DefaultRequestHeaders.Add("x-api-key", alertConfiguration.ApiKey);
+            var formData = new Dictionary<string, string>
+            {
+                {"client_id", alertConfiguration.ClientId},
+                {"redirect_uri", alertConfiguration.RedirectUrl},
+                {"grant_type", "client_credentials"},
+                {"client_secret", alertConfiguration.ClientSecret},
+                {"resource", "https://api.loganalytics.io"}
+            };
 
-            var getUrl = $"https://api.applicationinsights.io/v1/apps/{alertContext.ApplicationId}/query?timespan={alertContext.FormattedStartDateTime}/{alertContext.FormattedEndDateTime}&query={alertContext.FormattedSearchQuery}";
+            var tokenResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{alertConfiguration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
+            var token = await tokenResponse.Content.ReadAsStringAsync();
+            if(!tokenResponse.IsSuccessStatusCode)
+                throw new HttpRequestException(token);
+            
+            var getUrl = $"https://api.loganalytics.io/v1/workspaces/{alertContext.WorkspaceId}/query?timespan={alertContext.FormattedStartDateTime}/{alertContext.FormattedEndDateTime}&query={alertContext.FormattedSearchQuery}";
 
             _log.LogInformation($"Attempting to get data from {getUrl}");
 
