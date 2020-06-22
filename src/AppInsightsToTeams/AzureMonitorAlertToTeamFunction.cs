@@ -7,7 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AzureMonitorAlertToTeams.AlertProcessors;
+using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogAdministrative;
+using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogAutoscale;
+using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogPolicy;
+using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogSecurity;
 using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights;
+using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics;
+using AzureMonitorAlertToTeams.AlertProcessors.Metric;
+using AzureMonitorAlertToTeams.AlertProcessors.ResourceHealth;
+using AzureMonitorAlertToTeams.AlertProcessors.ServiceHealth;
 using AzureMonitorAlertToTeams.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,13 +40,21 @@ namespace AzureMonitorAlertToTeams
 
             _alertProcessors = new Dictionary<string, Func<IAlertProcessor>>
             {
-                {"Application Insights", () => new ApplicationInsightsAlertProcessor(_log, _httpClient)}
+                {"Application Insights", () => new ApplicationInsightsAlertProcessor(_log, _httpClient)},
+                {"Activity Log - Administrative", () => new ActivityLogAdministrativeAlertProcessor()},
+                {"Activity Log - Policy", () => new ActivityLogPolicyAlertProcessor()},
+                {"Activity Log - Autoscale", () => new ActivityLogAutoscaleAlertProcessor()},
+                {"Activity Log - Security", () => new ActivityLogSecurityAlertProcessor()},
+                {"Log Analytics", () => new LogAnalyticsAlertProcessor(_log, _httpClient)},
+                {"Platform", () => new MetricAlertProcessor()},
+                {"Resource Health", () => new ResourceHealthAlertProcessor()},
+                {"ServiceHealth", () => new ServiceHealthAlertProcessor()}
             };
         }
 
         [FunctionName("AzureMonitorAlertToTeams")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, 
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ExecutionContext executionContext)
         {
             _alertConfigurations ??= await ReadConfigurationAsync(executionContext);
@@ -63,6 +79,14 @@ namespace AzureMonitorAlertToTeams
                 .Replace("[[alert.data.essentials.monitorCondition]]", alert.Data.Essentials.MonitorCondition)
                 .Replace("[[alert.data.essentials.monitoringService]]", alert.Data.Essentials.MonitoringService)
                 .Replace("[[alert.data.essentials.firedDateTime]]", alert.Data.Essentials.FormattedFiredDateTime);
+
+            foreach (var essentialsAlertTargetID in alert.Data.Essentials.AlertTargetIDs)
+            {
+                var index = Array.IndexOf(alert.Data.Essentials.AlertTargetIDs, essentialsAlertTargetID) + 1;
+
+                teamsMessageTemplate = alertConfiguration.TeamsMessageTemplate
+                    .Replace($"[[alert.data.essentials.alertTargetIDs[{index}]]]", essentialsAlertTargetID);
+            }
 
             if (_alertProcessors.ContainsKey(alert.Data.Essentials.MonitoringService))
             {

@@ -194,3 +194,5 @@ For example, the text "[[searchResult.outerMessage]]" will be replaced with the 
 For each row of the result a message is posted to Microsoft Teams.
 
 https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions
+
+https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#alert-context
