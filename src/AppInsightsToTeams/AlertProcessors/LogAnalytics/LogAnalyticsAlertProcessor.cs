@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models;
 using AzureMonitorAlertToTeams.Models;
@@ -82,11 +83,14 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                 {"resource", "https://api.loganalytics.io"}
             };
 
-            var tokenResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{alertConfiguration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
-            var token = await tokenResponse.Content.ReadAsStringAsync();
-            if(!tokenResponse.IsSuccessStatusCode)
-                throw new HttpRequestException(token);
-            
+            var postResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{alertConfiguration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
+            var tokenData = await postResponse.Content.ReadAsStringAsync();
+            if(!postResponse.IsSuccessStatusCode)
+                throw new HttpRequestException(tokenData);
+
+            var token = JsonConvert.DeserializeObject<dynamic>(tokenData);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", (string)token.access_token);
+
             var getUrl = $"https://api.loganalytics.io/v1/workspaces/{alertContext.WorkspaceId}/query?timespan={alertContext.FormattedStartDateTime}/{alertContext.FormattedEndDateTime}&query={alertContext.FormattedSearchQuery}";
 
             _log.LogInformation($"Attempting to get data from {getUrl}");
