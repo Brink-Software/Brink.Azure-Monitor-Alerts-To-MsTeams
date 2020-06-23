@@ -91,11 +91,9 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
             var token = JsonConvert.DeserializeObject<dynamic>(tokenData);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", (string)token.access_token);
 
-            var getUrl = $"https://api.loganalytics.io/v1/workspaces/{alertContext.WorkspaceId}/query?timespan={alertContext.FormattedStartDateTime}/{alertContext.FormattedEndDateTime}&query={alertContext.FormattedSearchQuery}";
+            _log.LogInformation($"Attempting to get data from {alertContext.LinkToSearchResultsApi}");
 
-            _log.LogInformation($"Attempting to get data from {getUrl}");
-
-            var rawResult = await _httpClient.GetStringAsync(getUrl);
+            var rawResult = await _httpClient.GetStringAsync(alertContext.LinkToSearchResultsApi);
 
             _log.LogDebug($"Data received: {rawResult}");
 
