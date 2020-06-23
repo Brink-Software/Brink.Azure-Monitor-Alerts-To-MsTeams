@@ -49,7 +49,6 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
                 teamsMessageTemplate = teamsMessageTemplate
                     .Replace($"[[alert.alertContext.Dimensions[{index}].Name]]", dimension.Name)
                     .Replace($"[[alert.alertContext.Dimensions[{index}].Value]]", dimension.Value);
-
             }
 
             foreach (var table in result.Tables)
