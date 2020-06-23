@@ -75,11 +75,9 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
         {
             _httpClient.DefaultRequestHeaders.Add("x-api-key", alertConfiguration.ApiKey);
 
-            var getUrl = $"https://api.applicationinsights.io/v1/apps/{alertContext.ApplicationId}/query?timespan={alertContext.FormattedStartDateTime}/{alertContext.FormattedEndDateTime}&query={alertContext.FormattedSearchQuery}";
+            _log.LogInformation($"Attempting to get data from {alertContext.LinkToSearchResultsApi}");
 
-            _log.LogInformation($"Attempting to get data from {getUrl}");
-
-            var rawResult = await _httpClient.GetStringAsync(getUrl);
+            var rawResult = await _httpClient.GetStringAsync(alertContext.LinkToSearchResultsApi);
 
             _log.LogDebug($"Data received: {rawResult}");
 
