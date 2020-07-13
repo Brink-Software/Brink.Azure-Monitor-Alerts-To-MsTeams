@@ -24,7 +24,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models
         public long? Threshold { get; set; }
         public string Operator { get; set; }
         public SearchResult SearchResults { get; set; }
-        public List<DataSource> DataSources { get; set; }
+        public List<DataSource> DataSources { get; set; } = new List<DataSource>();
         public string IncludeSearchResults { get; set; }
         public string AlertType { get; set; }
         public string FormattedSearchQuery => SearchQuery.Replace("\n", string.Empty);
@@ -40,14 +40,14 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models
 
     public class SearchResult
     {
-        public List<Table> Tables { get; set; }
+        public List<Table> Tables { get; set; } = new List<Table>();
     }
 
     public class Table
     {
         public string Name { get; set; }
-        public List<Column> Columns { get; set; }
-        public List<List<string>> Rows { get; set; }
+        public List<Column> Columns { get; set; } = new List<Column>();
+        public List<List<string>> Rows { get; set; } = new List<List<string>>();
     }
 
     public class Column

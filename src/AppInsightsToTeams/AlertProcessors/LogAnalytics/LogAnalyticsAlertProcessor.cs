@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -12,13 +13,13 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
 {
     public class LogAnalyticsAlertProcessor : IAlertProcessor
     {
-        private readonly ILogger _log;
         private readonly HttpClient _httpClient;
-
-        public LogAnalyticsAlertProcessor(ILogger log, HttpClient httpClient)
+        private readonly ILogger _log;
+    
+        public LogAnalyticsAlertProcessor(ILogger log, IHttpClientFactory httpClientFactory)
         {
             _log = log;
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration,  Alert alert)
@@ -38,10 +39,10 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                 .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString(), StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[alert.alertContext.WorkspaceId]]", alertContext.WorkspaceId, StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[alert.alertContext.ResultCount]]", alertContext.ResultCount.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsApi]]", alertContext.LinkToFilteredSearchResultsApi.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsUi]]", alertContext.LinkToFilteredSearchResultsUi.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToSearchResults]]", alertContext.LinkToSearchResults.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToSearchResultsApi]]", alertContext.LinkToSearchResultsApi.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsApi]]", alertContext.LinkToFilteredSearchResultsApi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsUi]]", alertContext.LinkToFilteredSearchResultsUi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToSearchResults]]", alertContext.LinkToSearchResults.OriginalString, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToSearchResultsApi]]", alertContext.LinkToSearchResultsApi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[alert.alertContext.SearchQuery]]", alertContext.SearchQuery, StringComparison.InvariantCultureIgnoreCase);
 
             foreach (var configurationItem in alertContext.AffectedConfigurationItems)
@@ -60,11 +61,11 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                 {
                     var rowIndex = Array.IndexOf(table.Rows, row) + 1;
 
-                    var columns = table.Columns;
+                    var columns = table.Columns.Select(c => c.Name).ToArray();
                     foreach (var column in columns)
                     {
                         teamsMessageTemplate = teamsMessageTemplate
-                            .Replace($"[[alert.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column.Name}]]", row[Array.IndexOf(columns, column.Name)], StringComparison.InvariantCultureIgnoreCase);
+                            .Replace($"[[alert.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column}]]", row[Array.IndexOf(columns, column)], StringComparison.InvariantCultureIgnoreCase);
                     }
                 }
             }
@@ -83,6 +84,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                 {"resource", "https://api.loganalytics.io"}
             };
 
+            
             var postResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{alertConfiguration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
             var tokenData = await postResponse.Content.ReadAsStringAsync();
             if(!postResponse.IsSuccessStatusCode)
