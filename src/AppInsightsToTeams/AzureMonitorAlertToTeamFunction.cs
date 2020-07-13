@@ -33,19 +33,19 @@ namespace AzureMonitorAlertToTeams
         private IEnumerable<AlertConfiguration> _alertConfigurations;
         private readonly Dictionary<string, Func<IAlertProcessor>> _alertProcessors;
 
-        public AzureMonitorAlertToTeamFunction(HttpClient httpClient, ILogger<AzureMonitorAlertToTeamFunction> log)
+        public AzureMonitorAlertToTeamFunction(IHttpClientFactory httpClientFactory, ILogger<AzureMonitorAlertToTeamFunction> log)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient();
             _log = log;
 
             _alertProcessors = new Dictionary<string, Func<IAlertProcessor>>
             {
-                {"Application Insights", () => new ApplicationInsightsAlertProcessor(_log, _httpClient)},
+                {"Application Insights", () => new ApplicationInsightsAlertProcessor(_log, httpClientFactory)},
                 {"Activity Log - Administrative", () => new ActivityLogAdministrativeAlertProcessor()},
                 {"Activity Log - Policy", () => new ActivityLogPolicyAlertProcessor()},
                 {"Activity Log - Autoscale", () => new ActivityLogAutoscaleAlertProcessor()},
                 {"Activity Log - Security", () => new ActivityLogSecurityAlertProcessor()},
-                {"Log Analytics", () => new LogAnalyticsAlertProcessor(_log, _httpClient)},
+                {"Log Analytics", () => new LogAnalyticsAlertProcessor(_log, httpClientFactory)},
                 {"Platform", () => new MetricAlertProcessor()},
                 {"Resource Health", () => new ResourceHealthAlertProcessor()},
                 {"ServiceHealth", () => new ServiceHealthAlertProcessor()}
@@ -55,7 +55,7 @@ namespace AzureMonitorAlertToTeams
         [FunctionName("AzureMonitorAlertToTeams")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            [Blob("AzureMonitorAlertToTeams/configuration.json", FileAccess.Read, Connection = "ConfigurationStorageConnection")] Stream configuration)
+            [Blob("azuremonitoralerttoteams/configuration.json", FileAccess.Read, Connection = "ConfigurationStorageConnection")] Stream configuration)
         {
             _alertConfigurations ??= await ReadConfigurationAsync(configuration);
 
@@ -73,7 +73,7 @@ namespace AzureMonitorAlertToTeams
             if (alertConfiguration == null)
                 return new BadRequestErrorMessageResult($"No configuration found for Azure Monitor Alert with id {alert.Data.Essentials.AlertId}");
 
-            var teamsMessageTemplate = alertConfiguration.TeamsMessageTemplate
+            var teamsMessageTemplate = alertConfiguration.TeamsMessageTemplateAsJson
                 .Replace("[[alert.data.essentials.alertRule]]", alert.Data.Essentials.AlertRule, StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[alert.data.essentials.description]]", alert.Data.Essentials.Description, StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[alert.data.essentials.severity]]", alert.Data.Essentials.Severity, StringComparison.InvariantCultureIgnoreCase)
@@ -86,18 +86,27 @@ namespace AzureMonitorAlertToTeams
             {
                 var index = Array.IndexOf(alert.Data.Essentials.AlertTargetIDs, essentialsAlertTargetID) + 1;
 
-                teamsMessageTemplate = alertConfiguration.TeamsMessageTemplate
+                teamsMessageTemplate = teamsMessageTemplate
                     .Replace($"[[alert.data.essentials.alertTargetIDs[{index}]]]", essentialsAlertTargetID, StringComparison.InvariantCultureIgnoreCase);
             }
 
             if (_alertProcessors.ContainsKey(alert.Data.Essentials.MonitoringService))
             {
-                var alertProcessor = _alertProcessors[alert.Data.Essentials.MonitoringService].Invoke();
+                var processor = _alertProcessors[alert.Data.Essentials.MonitoringService];
+                var alertProcessor = processor.Invoke();
+                _log.LogInformation("Processing monitoring service {MonitoringService} using alert processor of type {ProcessorType}", alertProcessor.GetType().FullName, alert.Data.Essentials.MonitoringService);
                 teamsMessageTemplate = await alertProcessor.CreateTeamsMessageTemplateAsync(teamsMessageTemplate, alertConfiguration, alert);
             }
+            else
+            {
+                _log.LogInformation("No specific alert processor found for monitoring service {MonitoringService}", alert.Data.Essentials.MonitoringService);
+            }
 
-            await _httpClient.PostAsync(alertConfiguration.TeamsChannelConnectorWebhookUrl,
+            var response = await _httpClient.PostAsync(alertConfiguration.TeamsChannelConnectorWebhookUrl,
                 new StringContent(teamsMessageTemplate, Encoding.UTF8, "application/json"));
+
+            if(!response.IsSuccessStatusCode)
+                _log.LogError("Posting to teams failed with status code {StatusCode}: {Reason}", response.StatusCode, response.ReasonPhrase);
 
             _log.LogInformation(teamsMessageTemplate);
 

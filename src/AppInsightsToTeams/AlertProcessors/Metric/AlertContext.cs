@@ -27,7 +27,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.Metric
         public string Operator { get; set; }
         public long? Threshold { get; set; }
         public string TimeAggregation { get; set; }
-        public List<Dimension> Dimensions { get; set; }
+        public List<Dimension> Dimensions { get; set; } = new List<Dimension>();
         public double? MetricValue { get; set; }
     }
 

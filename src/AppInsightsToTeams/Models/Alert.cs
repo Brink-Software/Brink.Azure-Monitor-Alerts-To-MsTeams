@@ -24,7 +24,7 @@ namespace AzureMonitorAlertToTeams.Models
         public string MonitorCondition { get; set; }
         public string MonitoringService { get; set; }
         public string[] AlertTargetIDs { get; set; }
-        public Guid? OriginAlertId { get; set; }
+        public string OriginAlertId { get; set; }
         public DateTimeOffset? FiredDateTime { get; set; }
         public string Description { get; set; }
         public string EssentialsVersion { get; set; }

@@ -20,7 +20,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models
         public long? Threshold { get; set; }
         public string Operator { get; set; }
         public Guid? ApplicationId { get; set; }
-        public Dimension[] Dimensions { get; set; }
+        public Dimension[] Dimensions { get; set; } = new Dimension[0];
         public SearchResults SearchResults { get; set; }
         public string IncludeSearchResults { get; set; }
         public string AlertType { get; set; }
@@ -37,21 +37,21 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models
 
     public class SearchResults
     {
-        public Table[] Tables { get; set; }
-        public DataSource[] DataSources { get; set; }
+        public Table[] Tables { get; set; } = new Table[0];
+        public DataSource[] DataSources { get; set; } = new DataSource[0];
     }
 
     public class DataSource
     {
         public string ResourceId { get; set; }
-        public string[] Tables { get; set; }
+        public string[] Tables { get; set; } = new string[0];
     }
 
     public class Table
     {
         public string Name { get; set; }
-        public Column[] Columns { get; set; }
-        public string[][] Rows { get; set; }
+        public Column[] Columns { get; set; } = new Column[0];
+        public string[][] Rows { get; set; } = new string[0][];
     }
 
     public class Column
