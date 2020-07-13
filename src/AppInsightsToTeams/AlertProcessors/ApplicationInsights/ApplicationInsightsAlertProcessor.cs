@@ -47,8 +47,8 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
                 var index = Array.IndexOf(alertContext.Dimensions, dimension) + 1;
 
                 teamsMessageTemplate = teamsMessageTemplate
-                    .Replace($"[[alert.alertContext.Dimensions[{index}].Name]]", dimension.Name)
-                    .Replace($"[[alert.alertContext.Dimensions[{index}].Value]]", dimension.Value);
+                    .Replace($"[[alert.alertContext.Dimensions[{index}].Name]]", dimension.Name, StringComparison.InvariantCultureIgnoreCase)
+                    .Replace($"[[alert.alertContext.Dimensions[{index}].Value]]", dimension.Value, StringComparison.InvariantCultureIgnoreCase);
             }
 
             foreach (var table in result.Tables)
@@ -63,7 +63,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
                     foreach (var column in columns)
                     {
                         teamsMessageTemplate = teamsMessageTemplate
-                            .Replace($"[[alert.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column.Name}]]", row[Array.IndexOf(columns, column.Name)]);
+                            .Replace($"[[alert.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column.Name}]]", row[Array.IndexOf(columns, column.Name)], StringComparison.InvariantCultureIgnoreCase);
                     }
                 }
             }

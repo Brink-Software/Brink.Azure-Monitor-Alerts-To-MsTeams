@@ -7,10 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureMonitorAlertToTeams", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{165A5023-CD50-4245-9739-71EE897D5B9C}"
 	ProjectSection(SolutionItems) = preProject
-		Sample-Alert.json = Sample-Alert.json
 		Sample-Configuration.json = Sample-Configuration.json
-		Sample-Query-Result.json = Sample-Query-Result.json
-		Sample-Template.json = Sample-Template.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FFAA1F0C-9A9E-49D0-B15E-3688EE1352A4}"

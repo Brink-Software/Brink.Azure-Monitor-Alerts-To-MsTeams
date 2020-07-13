@@ -28,28 +28,28 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
             var result = await FetchLogQueryResultsAsync(configuration, alertContext);
            
             teamsMessageTemplate = teamsMessageTemplate
-                .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString())
-                .Replace("[[alert.alertContext.Operator]]", alertContext.Operator)
-                .Replace("[[alert.alertContext.SearchIntervalDurationMin]]", alertContext.SearchIntervalDurationMin.ToString())
-                .Replace("[[alert.alertContext.SearchIntervalInMinutes]]", alertContext.SearchIntervalInMinutes.ToString())
-                .Replace("[[alert.alertContext.SearchIntervalStartTimeUtc]]", alertContext.FormattedStartDateTime)
-                .Replace("[[alert.alertContext.SearchIntervalEndtimeUtc]]", alertContext.FormattedEndDateTime)
-                .Replace("[[alert.alertContext.AlertType]]", alertContext.AlertType)
-                .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString())
-                .Replace("[[alert.alertContext.WorkspaceId]]", alertContext.WorkspaceId)
-                .Replace("[[alert.alertContext.ResultCount]]", alertContext.ResultCount.ToString())
-                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsApi]]", alertContext.LinkToFilteredSearchResultsApi.ToString())
-                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsUi]]", alertContext.LinkToFilteredSearchResultsUi.ToString())
-                .Replace("[[alert.alertContext.LinkToSearchResults]]", alertContext.LinkToSearchResults.ToString())
-                .Replace("[[alert.alertContext.LinkToSearchResultsApi]]", alertContext.LinkToSearchResultsApi.ToString())
-                .Replace("[[alert.alertContext.SearchQuery]]", alertContext.SearchQuery);
+                .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.Operator]]", alertContext.Operator, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.SearchIntervalDurationMin]]", alertContext.SearchIntervalDurationMin.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.SearchIntervalInMinutes]]", alertContext.SearchIntervalInMinutes.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.SearchIntervalStartTimeUtc]]", alertContext.FormattedStartDateTime, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.SearchIntervalEndtimeUtc]]", alertContext.FormattedEndDateTime, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.AlertType]]", alertContext.AlertType, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.WorkspaceId]]", alertContext.WorkspaceId, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.ResultCount]]", alertContext.ResultCount.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsApi]]", alertContext.LinkToFilteredSearchResultsApi.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsUi]]", alertContext.LinkToFilteredSearchResultsUi.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToSearchResults]]", alertContext.LinkToSearchResults.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.LinkToSearchResultsApi]]", alertContext.LinkToSearchResultsApi.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.alertContext.SearchQuery]]", alertContext.SearchQuery, StringComparison.InvariantCultureIgnoreCase);
 
             foreach (var configurationItem in alertContext.AffectedConfigurationItems)
             {
                 var index = alertContext.AffectedConfigurationItems.IndexOf(configurationItem) + 1;
 
                 teamsMessageTemplate = teamsMessageTemplate
-                    .Replace($"[[alert.alertContext.AffectedConfigurationItems[{index}]]]", configurationItem);
+                    .Replace($"[[alert.alertContext.AffectedConfigurationItems[{index}]]]", configurationItem, StringComparison.InvariantCultureIgnoreCase);
             }
 
             foreach (var table in result.Tables)
@@ -64,7 +64,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                     foreach (var column in columns)
                     {
                         teamsMessageTemplate = teamsMessageTemplate
-                            .Replace($"[[alert.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column.Name}]]", row[Array.IndexOf(columns, column.Name)]);
+                            .Replace($"[[alert.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column.Name}]]", row[Array.IndexOf(columns, column.Name)], StringComparison.InvariantCultureIgnoreCase);
                     }
                 }
             }
