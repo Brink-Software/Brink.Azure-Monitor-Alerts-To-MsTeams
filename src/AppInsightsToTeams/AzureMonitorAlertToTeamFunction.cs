@@ -67,25 +67,27 @@ namespace AzureMonitorAlertToTeams
 
             var alert = JsonConvert.DeserializeObject<Alert>(requestBody);
 
-            var alertConfiguration = _alertConfigurations.FirstOrDefault(ac => ac.AlertId == alert.Data.Essentials.AlertId);
+            var alertConfiguration = _alertConfigurations.FirstOrDefault(ac => 
+                    ac.AlertRule == alert.Data.Essentials.AlertRule 
+                    && alert.Data.Essentials.AlertId.StartsWith($"/subscriptions/{ac.SubscriptionId}", StringComparison.InvariantCultureIgnoreCase));
             if (alertConfiguration == null)
                 return new BadRequestErrorMessageResult($"No configuration found for Azure Monitor Alert with id {alert.Data.Essentials.AlertId}");
 
             var teamsMessageTemplate = alertConfiguration.TeamsMessageTemplate
-                .Replace("[[alert.data.essentials.alertRule]]", alert.Data.Essentials.AlertRule)
-                .Replace("[[alert.data.essentials.description]]", alert.Data.Essentials.Description)
-                .Replace("[[alert.data.essentials.severity]]", alert.Data.Essentials.Severity)
-                .Replace("[[alert.data.essentials.signalType]]", alert.Data.Essentials.SignalType)
-                .Replace("[[alert.data.essentials.monitorCondition]]", alert.Data.Essentials.MonitorCondition)
-                .Replace("[[alert.data.essentials.monitoringService]]", alert.Data.Essentials.MonitoringService)
-                .Replace("[[alert.data.essentials.firedDateTime]]", alert.Data.Essentials.FormattedFiredDateTime);
+                .Replace("[[alert.data.essentials.alertRule]]", alert.Data.Essentials.AlertRule, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.data.essentials.description]]", alert.Data.Essentials.Description, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.data.essentials.severity]]", alert.Data.Essentials.Severity, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.data.essentials.signalType]]", alert.Data.Essentials.SignalType, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.data.essentials.monitorCondition]]", alert.Data.Essentials.MonitorCondition, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.data.essentials.monitoringService]]", alert.Data.Essentials.MonitoringService, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[alert.data.essentials.firedDateTime]]", alert.Data.Essentials.FormattedFiredDateTime, StringComparison.InvariantCultureIgnoreCase);
 
             foreach (var essentialsAlertTargetID in alert.Data.Essentials.AlertTargetIDs)
             {
                 var index = Array.IndexOf(alert.Data.Essentials.AlertTargetIDs, essentialsAlertTargetID) + 1;
 
                 teamsMessageTemplate = alertConfiguration.TeamsMessageTemplate
-                    .Replace($"[[alert.data.essentials.alertTargetIDs[{index}]]]", essentialsAlertTargetID);
+                    .Replace($"[[alert.data.essentials.alertTargetIDs[{index}]]]", essentialsAlertTargetID, StringComparison.InvariantCultureIgnoreCase);
             }
 
             if (_alertProcessors.ContainsKey(alert.Data.Essentials.MonitoringService))
