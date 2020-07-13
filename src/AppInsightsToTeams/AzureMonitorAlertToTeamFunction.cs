@@ -55,9 +55,10 @@ namespace AzureMonitorAlertToTeams
         [FunctionName("AzureMonitorAlertToTeams")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [Blob("AzureMonitorAlertToTeams/configuration.json", FileAccess.Read, Connection = "ConfigurationStorageConnection")] Stream configuration,
             ExecutionContext executionContext)
         {
-            _alertConfigurations ??= await ReadConfigurationAsync(executionContext);
+            _alertConfigurations ??= await ReadConfigurationAsync(configuration);
 
             string requestBody;
             using (var streamReader = new StreamReader(req.Body))
@@ -104,11 +105,11 @@ namespace AzureMonitorAlertToTeams
             return new OkResult();
         }
 
-        private static async Task<IEnumerable<AlertConfiguration>> ReadConfigurationAsync(ExecutionContext executionContext)
+        private static async Task<IEnumerable<AlertConfiguration>> ReadConfigurationAsync(Stream configuration)
         {
-            var path = Path.Combine(executionContext.FunctionDirectory, "alert-configurations.json");
-            var json = await File.ReadAllTextAsync(path);
-            return JsonConvert.DeserializeObject<IEnumerable<AlertConfiguration>>(json);
+            using var sr = new StreamReader(configuration);
+            
+            return JsonConvert.DeserializeObject<IEnumerable<AlertConfiguration>>(await sr.ReadToEndAsync());
         }
     }
 }
