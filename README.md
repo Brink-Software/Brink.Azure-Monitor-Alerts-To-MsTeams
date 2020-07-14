@@ -102,7 +102,9 @@ The `TeamsMessageTemplate` property of an alert configuration contains a json ob
 
 ![Message Card playground](/assets/alert-message.png)
 
-when creating message card templates to consume in this Azure Function
+Placeholders can be defined using double squares ([[a.placeholder]]). When the function is triggered placeholders are replaced with actual values from the alert data. Placeholders are linked to the alert data using the [JSONPath](https://restfulapi.net/json-jsonpath/) . notation.
+
+All alerts must be enabled to use the common schema as found [here](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions). Use this to build the template. Each alert type will also have data specific for that type. Those can be found [here](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#alert-context).
 
 ### Example 
 
@@ -112,26 +114,26 @@ Suppose a template is defined this:
 "TeamsMessageTemplate": {
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions",
-            "summary": "Alert fired for rule [[alert.data.essentials.alertRule]]",
+            "summary": "Alert fired for rule [[$.data.essentials.alertRule]]",
             "themeColor": "0078D7",
-            "title": "[[alert.data.essentials.monitorCondition]]",
+            "title": "[[$.data.essentials.monitorCondition]]",
             "sections": [
                 {
                     "facts": [
                         {
                             "name": "Name:",
-                            "value": "[[alert.alertContext.Condition.AllOf[1].MetricName]]"
+                            "value": "[[$.data.alertContext.Condition.AllOf[1].MetricName]]"
                         },
                         {
                             "name": "Value:",
-                            "value": "[[alert.alertContext.Condition.AllOf[1].MetricValue]]"
+                            "value": "[[$.data.alertContext.Condition.AllOf[1].MetricValue]]"
                         },
                         {
                             "name": "Severity:",
-                            "value": "[[alert.data.essentials.severity]]"
+                            "value": "[[$.data.essentials.severity]]"
                         }
                     ],
-                    "text": "Alert fired for rule [[alert.data.essentials.alertRule]]"
+                    "text": "Alert fired for rule [[$.data.essentials.alertRule]]"
                 }
             ]
         }
@@ -222,7 +224,3 @@ the rendered template will look like this:
 ```
 
 ![Rendered Message Card](/assets/rendered-template.png)
-
-https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions
-
-https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#alert-context
