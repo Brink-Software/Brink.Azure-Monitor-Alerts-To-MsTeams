@@ -77,8 +77,6 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
         {
             var client = _httpClient ?? CreateAndSetClient();
 
-            _log.LogInformation($"Attempting to get data from {alertContext.LinkToSearchResultsApi}");
-
             var rawResult = await client.GetStringAsync(alertContext.LinkToSearchResultsApi);
 
             _log.LogDebug($"Data received: {rawResult}");

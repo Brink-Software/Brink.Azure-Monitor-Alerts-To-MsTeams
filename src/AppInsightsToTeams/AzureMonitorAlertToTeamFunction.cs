@@ -108,7 +108,7 @@ namespace AzureMonitorAlertToTeams
             if(!response.IsSuccessStatusCode)
                 _log.LogError("Posting to teams failed with status code {StatusCode}: {Reason}", response.StatusCode, response.ReasonPhrase);
 
-            _log.LogInformation(teamsMessageTemplate);
+            _log.LogDebug(teamsMessageTemplate);
 
             return new OkResult();
         }
