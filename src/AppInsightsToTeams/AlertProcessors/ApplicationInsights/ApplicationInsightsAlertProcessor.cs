@@ -28,29 +28,29 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
             var result = await FetchLogQueryResultsAsync(configuration, alertContext);
 
             teamsMessageTemplate = teamsMessageTemplate
-                .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold?.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.Operator]]", alertContext.Operator, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.SearchIntervalDurationMin]]", alertContext.SearchIntervalDurationMin?.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.SearchIntervalInMinutes]]", alertContext.SearchIntervalInMinutes?.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.SearchIntervalStartTimeUtc]]", alertContext.FormattedStartDateTime, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.SearchIntervalEndtimeUtc]]", alertContext.FormattedEndDateTime, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.AlertType]]", alertContext.AlertType, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.Threshold]]", alertContext.Threshold.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.ApplicationId]]", alertContext.ApplicationId?.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.ResultCount]]", alertContext.ResultCount?.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsApi]]", alertContext.LinkToFilteredSearchResultsApi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToFilteredSearchResultsUi]]", alertContext.LinkToFilteredSearchResultsUi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToSearchResults]]", alertContext.LinkToSearchResults.OriginalString, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.LinkToSearchResultsApi]]", alertContext.LinkToSearchResultsApi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
-                .Replace("[[alert.alertContext.SearchQuery]]", alertContext.SearchQuery);
+                .Replace("[[$.data.alertContext.Threshold]]", alertContext.Threshold?.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.Operator]]", alertContext.Operator, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.SearchIntervalDurationMin]]", alertContext.SearchIntervalDurationMin?.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.SearchIntervalInMinutes]]", alertContext.SearchIntervalInMinutes?.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.SearchIntervalStartTimeUtc]]", alertContext.FormattedStartDateTime, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.SearchIntervalEndtimeUtc]]", alertContext.FormattedEndDateTime, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.AlertType]]", alertContext.AlertType, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.Threshold]]", alertContext.Threshold.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.ApplicationId]]", alertContext.ApplicationId?.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.ResultCount]]", alertContext.ResultCount?.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.LinkToFilteredSearchResultsApi]]", alertContext.LinkToFilteredSearchResultsApi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.LinkToFilteredSearchResultsUi]]", alertContext.LinkToFilteredSearchResultsUi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.LinkToSearchResults]]", alertContext.LinkToSearchResults.OriginalString, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.LinkToSearchResultsApi]]", alertContext.LinkToSearchResultsApi.OriginalString, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("[[$.data.alertContext.SearchQuery]]", alertContext.SearchQuery);
 
             foreach (var dimension in alertContext.Dimensions)
             {
                 var index = Array.IndexOf(alertContext.Dimensions, dimension) + 1;
 
                 teamsMessageTemplate = teamsMessageTemplate
-                    .Replace($"[[alert.alertContext.Dimensions[{index}].Name]]", dimension.Name, StringComparison.InvariantCultureIgnoreCase)
-                    .Replace($"[[alert.alertContext.Dimensions[{index}].Value]]", dimension.Value, StringComparison.InvariantCultureIgnoreCase);
+                    .Replace($"[[$.data.alertContext.Dimensions[{index}].Name]]", dimension.Name, StringComparison.InvariantCultureIgnoreCase)
+                    .Replace($"[[$.data.alertContext.Dimensions[{index}].Value]]", dimension.Value, StringComparison.InvariantCultureIgnoreCase);
             }
 
             foreach (var table in result.Tables)
@@ -65,7 +65,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
                     foreach (var column in columns)
                     {
                         teamsMessageTemplate = teamsMessageTemplate
-                            .Replace($"[[alert.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column}]]", row[Array.IndexOf(columns, column)], StringComparison.InvariantCultureIgnoreCase);
+                            .Replace($"[[$.data.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column}]]", row[Array.IndexOf(columns, column)], StringComparison.InvariantCultureIgnoreCase);
                     }
                 }
             }
