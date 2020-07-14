@@ -83,7 +83,6 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                 {"client_secret", alertConfiguration.ClientSecret},
                 {"resource", "https://api.loganalytics.io"}
             };
-
             
             var postResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{alertConfiguration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
             var tokenData = await postResponse.Content.ReadAsStringAsync();
@@ -92,8 +91,6 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
 
             var token = JsonConvert.DeserializeObject<dynamic>(tokenData);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", (string)token.access_token);
-
-            _log.LogInformation($"Attempting to get data from {alertContext.LinkToSearchResultsApi}");
 
             var rawResult = await _httpClient.GetStringAsync(alertContext.LinkToSearchResultsApi);
 
