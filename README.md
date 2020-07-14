@@ -106,7 +106,7 @@ Placeholders can be defined using double squares ([[a.placeholder]]). When the f
 
 All alerts must be enabled to use the common schema as found [here](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions). Use this to build the template. Each alert type will also have data specific for that type. Those can be found [here](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#alert-context).
 
-### Example 
+### Example template
 
 Suppose a template is defined this:
 
@@ -224,3 +224,126 @@ the rendered template will look like this:
 ```
 
 ![Rendered Message Card](/assets/rendered-template.png)
+
+### Example configuration file
+
+A configuration file including multiple alert may look like this:
+
+```json
+[
+    {
+        "Context": {
+            "ApiKey": "sdbtmr9a51rvfsrv9erqyu3bk2y5r52k1n36m5rpul"
+        },
+        "AlertRule": "AI alert log result",
+        "SubscriptionId": "eb1659c6-5bc1-5cd9-b5fd-15ec996cceee",
+        "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/99b6bcb6-9d52-5d93-966c-e62b1251556d@5d325cf5-5d9c-5b5f-9e15-3b6126f5519c/IncomingWebhook/6f51c9cf1b995a51a1cacd931ca5551a/6f5b9955-9abb-56cf-9a53-61fa2952dce9",
+        "TeamsMessageTemplate": {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "summary": "Alert fired for rule [[$.data.essentials.alertRule]]",
+            "themeColor": "1169D6",
+            "title": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].innermostType]]",
+            "sections": [
+                {
+                    "facts": [
+                        {
+                            "name": "Operation Id:",
+                            "value": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].operation_Id]]"
+                        }
+                    ],
+                    "text": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].innermostMessage]]"
+                }
+            ],
+            "potentialAction": [
+                {
+                    "@type": "OpenUri",
+                    "name": "View in Portal",
+                    "targets": [
+                        {
+                            "os": "default",
+                            "uri": "[[$.data.alertContext.LinkToSearchResults]]"
+                        }
+                    ]
+                }
+            ]
+        },
+        "Description": "WebCorePlayGround"
+    },
+    {
+        "Context": null,
+        "AlertRule": "Metric",
+        "SubscriptionId": "eb1659c6-5bc1-5cd9-b5fd-15ec996cceee",
+        "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/99b6bcb6-9d52-5d93-966c-e62b1251556d@5d325cf5-5d9c-5b5f-9e15-3b6126f5519c/IncomingWebhook/6f51c9cf1b995a51a1cacd931ca5551a/6f5b9955-9abb-56cf-9a53-61fa2952dce9",
+        "TeamsMessageTemplate": {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "summary": "Alert fired for rule [[$.data.essentials.alertRule]]",
+            "themeColor": "1169D6",
+            "title": "[[$.data.essentials.monitorCondition]]",
+            "sections": [
+                {
+                    "facts": [
+                        {
+                            "name": "Name:",
+                            "value": "[[$.data.alertContext.Condition.AllOf[1].MetricName]]"
+                        },
+                        {
+                            "name": "Value:",
+                            "value": "[[$.data.alertContext.Condition.AllOf[1].MetricValue]]"
+                        },
+                        {
+                            "name": "Severity:",
+                            "value": "[[$.data.essentials.severity]]"
+                        }
+                    ],
+                    "text": "[[$.data.essentials.firedDateTime]]"
+                }
+            ]
+        },
+        "Description": null
+    },
+    {
+        "Context": {
+            "ClientSecret": "gtkhf9Rld_~vryE~h~HW-616E~RIc91AS5",
+            "ClientId": "d91b6cd1-9c6f-516c-b1f2-ca21c9996a6b",
+            "TenantId": "91265f95-65f9-5955-95fb-e111a5c9abac",
+            "RedirectUrl": "https://loganalytics"
+        },
+        "AlertRule": "Analytics",
+        "SubscriptionId": "eb1659c6-5bc1-5cd9-b5fd-15ec996cceee",
+        "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/99b6bcb6-9d52-5d93-966c-e62b1251556d@5d325cf5-5d9c-5b5f-9e15-3b6126f5519c/IncomingWebhook/6f51c9cf1b995a51a1cacd931ca5551a/6f5b9955-9abb-56cf-9a53-61fa2952dce9",
+        "TeamsMessageTemplate": {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "summary": "Alert fired for rule [[$.data.essentials.alertRule]]",
+            "themeColor": "1169D6",
+            "title": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].Resource]]",
+            "sections": [
+                {
+                    "facts": [
+                        {
+                            "name": "Metric Name:",
+                            "value": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].MetricName]]"
+                        }
+                    ],
+                    "text": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].UnitName]]"
+                }
+            ],
+            "potentialAction": [
+                {
+                    "@type": "OpenUri",
+                    "name": "View in Portal",
+                    "targets": [
+                        {
+                            "os": "default",
+                            "uri": "[[$.data.alertContext.LinkToSearchResults]]"
+                        }
+                    ]
+                }
+            ]
+        },
+        "Description": "Log Analytics"
+    }
+]
+```
