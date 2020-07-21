@@ -62,7 +62,7 @@ The function operates based on a configuration file in json format. The json con
 {
   "Context": {},
   "AlertRule": "{Name of the alert rule in Azure Monitor}",
-  "SubscriptionId": "{Id of the subscription in which the alert is defined}",
+  "AlertTargetID": "{Id of the resource generating the alert}",
   "TeamsChannelConnectorWebhookUrl": "{Url of the microsoft teams channel}",
   "TeamsMessageTemplate": {},
   "Description": "{Your own description to identify or describe this alert configuration}"
@@ -236,7 +236,7 @@ A configuration file including multiple alert may look like this:
             "ApiKey": "sdbtmr9a51rvfsrv9erqyu3bk2y5r52k1n36m5rpul"
         },
         "AlertRule": "AI alert log result",
-        "SubscriptionId": "eb1659c6-5bc1-5cd9-b5fd-15ec996cceee",
+        "AlertTargetID": "/subscriptions/rb1658c6-4bc0-4cd9-b4fd-14ec986cceww/resourcegroups/default-applicationinsights-eastus/providers/microsoft.insights/components/webapp",
         "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/99b6bcb6-9d52-5d93-966c-e62b1251556d@5d325cf5-5d9c-5b5f-9e15-3b6126f5519c/IncomingWebhook/6f51c9cf1b995a51a1cacd931ca5551a/6f5b9955-9abb-56cf-9a53-61fa2952dce9",
         "TeamsMessageTemplate": {
             "@type": "MessageCard",
@@ -267,13 +267,12 @@ A configuration file including multiple alert may look like this:
                     ]
                 }
             ]
-        },
-        "Description": "WebCorePlayGround"
+        }
     },
     {
         "Context": null,
         "AlertRule": "Metric",
-        "SubscriptionId": "eb1659c6-5bc1-5cd9-b5fd-15ec996cceee",
+        "AlertTargetID": "/subscriptions/rb1658c6-4bc0-4cd9-b4fd-14ec986cceww/resourcegroups/default-applicationinsights-eastus/providers/microsoft.insights/components/webapp",
         "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/99b6bcb6-9d52-5d93-966c-e62b1251556d@5d325cf5-5d9c-5b5f-9e15-3b6126f5519c/IncomingWebhook/6f51c9cf1b995a51a1cacd931ca5551a/6f5b9955-9abb-56cf-9a53-61fa2952dce9",
         "TeamsMessageTemplate": {
             "@type": "MessageCard",
@@ -300,8 +299,7 @@ A configuration file including multiple alert may look like this:
                     "text": "[[$.data.essentials.firedDateTime]]"
                 }
             ]
-        },
-        "Description": null
+        }
     },
     {
         "Context": {
@@ -311,7 +309,7 @@ A configuration file including multiple alert may look like this:
             "RedirectUrl": "https://loganalytics"
         },
         "AlertRule": "Analytics",
-        "SubscriptionId": "eb1659c6-5bc1-5cd9-b5fd-15ec996cceee",
+        "AlertTargetID": "/subscriptions/rb1658c6-4bc0-4cd9-b4fd-14ec986cceww/resourcegroups/default-applicationinsights-eastus/providers/microsoft.insights/components/webapp-anal",
         "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/99b6bcb6-9d52-5d93-966c-e62b1251556d@5d325cf5-5d9c-5b5f-9e15-3b6126f5519c/IncomingWebhook/6f51c9cf1b995a51a1cacd931ca5551a/6f5b9955-9abb-56cf-9a53-61fa2952dce9",
         "TeamsMessageTemplate": {
             "@type": "MessageCard",
@@ -342,8 +340,7 @@ A configuration file including multiple alert may look like this:
                     ]
                 }
             ]
-        },
-        "Description": "Log Analytics"
+        }
     }
 ]
 ```

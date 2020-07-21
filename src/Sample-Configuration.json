@@ -1,10 +1,10 @@
   [
     {
-      "Type": "Application Insights",
-      "AlertId": "/subscriptions/xxxxxxxxxxxxx/providers/Microsoft.AlertsManagement/alerts/xxxxxxxxxx",
-      "Identifier": "Put something here to identify what resource is involved in the configuration",
-      "AppInsightsId": "47120b41-e034-41d7-8c48-a411eb07b366",
-      "AppInsightsApiKey": "vwnubeek5gqf3buonnwfpdgcpaalhymlrzw7subs",
+      "AlertRule": "My Alert Rule Name 1",
+      "AlertTargetID": "/subscriptions/xxxxxxxxxxxxx/resourceGroups/myrg/providers/microsoft.insights/components/my-app-insights",
+      "Context": {
+        "ApiKey": "ghtgwsek5gqf3buonnwfpdgcrtlhymlrzw7subs"
+      },
       "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/45b6bcb7-8d51-4e83-877c-e72b1250456d@4d2324cf4-5d8c-4b4f-8e15-3b6026f4518c/IncomingWebhook/edfecdaaf410354ab5c65f5f7aea253a/7f4b9854-9bcc-46cf-9a53-60fa2842dce9",
       "TeamsMessageTemplate": {
         "@type": "MessageCard",
@@ -42,11 +42,11 @@
       }
     },
     {
-      "Type": "Application Insights",
-      "AlertId\": \"/subscriptions/xxxxxxxxxxxxx/providers/Microsoft.AlertsManagement/alerts/xxxxxxxxxx\",": null,
-      "Identifier": "App Insight Resource for Service XYZ - Production",
-      "AppInsightsId": "62430b41-e034-41d7-8c48-a411eb07b366",
-      "AppInsightsApiKey": "ghtgweek5gqf3buonnwfpdgcpaalhymlrzw7subs",
+      "AlertRule": "My Alert Rule Name 2",
+      "AlertTargetID": "/subscriptions/xxxxxxxxxxxxx/resourceGroups/myrg/providers/microsoft.insights/components/my-app-insights",
+      "Context": {
+        "ApiKey": "ghtgwsek5gqf3buonnwfpdgcpaalhymlrzw7subs"
+      },
       "TeamsChannelConnectorWebhookUrl": "https://outlook.office.com/webhook/88b6bcb7-8d51-4e83-877c-e72b1250456d@4d2324cf4-5d8c-4b4f-8e15-3b6026f4518c/IncomingWebhook/edfecdaaf410354ab5c65f5f7aea253a/7f4b9854-9bcc-46cf-9a53-60fa2842dce9",
       "TeamsMessageTemplate": {
         "@type": "MessageCard",
