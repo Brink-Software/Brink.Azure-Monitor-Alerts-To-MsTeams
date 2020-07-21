@@ -65,7 +65,6 @@ The function operates based on a configuration file in json format. The json con
   "AlertTargetID": "{Id of the resource generating the alert}",
   "TeamsChannelConnectorWebhookUrl": "{Url of the microsoft teams channel}",
   "TeamsMessageTemplate": {},
-  "Description": "{Your own description to identify or describe this alert configuration}"
 }
 ```
 
