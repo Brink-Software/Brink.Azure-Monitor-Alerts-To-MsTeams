@@ -69,7 +69,7 @@ namespace AzureMonitorAlertToTeams
 
             var alertConfiguration = _alertConfigurations.FirstOrDefault(ac => 
                     ac.AlertRule == alert.Data.Essentials.AlertRule 
-                    && alert.Data.Essentials.AlertId.StartsWith($"/subscriptions/{ac.SubscriptionId}", StringComparison.InvariantCultureIgnoreCase));
+                    && alert.Data.Essentials.AlertTargetIDs.Contains(ac.AlertTargetID));
             if (alertConfiguration == null)
                 return new BadRequestErrorMessageResult($"No configuration found for Azure Monitor Alert with id {alert.Data.Essentials.AlertId}");
 
