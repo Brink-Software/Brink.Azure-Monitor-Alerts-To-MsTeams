@@ -47,8 +47,8 @@ It is now time to configure the Azure Function deployed [previously](#Deploy-the
 | Application Setting            | Description                                     | Example value                                                                                             |
 | ------------------------------ | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | ConfigurationStorageConnection | A connection string to an Azure Storage account | DefaultEndpointsProtocol=https; AccountName=azuremonitor; AccountKey=xxx; EndpointSuffix=core.windows.net |
-
-The blob storage must have a container named "azuremonitoralerttoteams" containing a json file named "configuration.json". See the [relevant section](#Creating-a-configuration-file)
+| ConfigurationFilename | Filename of the JSON configuration file | configuration.json, See the [relevant section](#Creating-a-configuration-file) |
+| ContainerName | Name of the container containing the configuration file in the storage account defined by the ConfigurationStorageConnection setting. | mycontainer |
 
 ## Create Azure Monitor Alerts
 

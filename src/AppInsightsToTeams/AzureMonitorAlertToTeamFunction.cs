@@ -55,7 +55,7 @@ namespace AzureMonitorAlertToTeams
         [FunctionName("AzureMonitorAlertToTeams")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            [Blob("azuremonitoralerttoteams/configuration.json", FileAccess.Read, Connection = "ConfigurationStorageConnection")] Stream configuration)
+            [Blob("%ContainerName%/%ConfigurationFilename%", FileAccess.Read, Connection = "ConfigurationStorageConnection")] Stream configuration)
         {
             _alertConfigurations ??= await ReadConfigurationAsync(configuration);
 
