@@ -102,13 +102,16 @@ namespace AzureMonitorAlertToTeams
                 _log.LogInformation("No specific alert processor found for monitoring service {MonitoringService}", alert.Data.Essentials.MonitoringService);
             }
 
+            _log.LogDebug(teamsMessageTemplate);
+
             var response = await _httpClient.PostAsync(alertConfiguration.TeamsChannelConnectorWebhookUrl,
                 new StringContent(teamsMessageTemplate, Encoding.UTF8, "application/json"));
 
-            if(!response.IsSuccessStatusCode)
-                _log.LogError("Posting to teams failed with status code {StatusCode}: {Reason}", response.StatusCode, response.ReasonPhrase);
-
-            _log.LogDebug(teamsMessageTemplate);
+            if (!response.IsSuccessStatusCode)
+            {
+                _log.LogError("Posting to teams failed with status code {StatusCode}: {Reason}", response.StatusCode,  response.ReasonPhrase);
+                return new StatusCodeResult((int)response.StatusCode);
+            }
 
             return new OkResult();
         }
