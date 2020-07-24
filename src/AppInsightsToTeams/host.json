@@ -2,7 +2,7 @@
   "version": "2.0",
   "logging": {
     "LogLevel": {
-      "Default": "Warning",
+      "Default": "Information",
       "Host.Results": "Information",
       "Host.Aggregator": "Information",
       "AzureMonitorAlertToTeams.AzureMonitorAlertToTeamFunction": "Information"
