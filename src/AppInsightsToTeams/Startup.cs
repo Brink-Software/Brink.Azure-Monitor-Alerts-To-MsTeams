@@ -1,4 +1,5 @@
 ﻿using AzureMonitorAlertToTeams;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ namespace AzureMonitorAlertToTeams
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
+            builder.Services.AddSingleton<ITelemetryInitializer, TelemetryEnrichment>();
             builder.Services.AddLogging();
             builder.Services.AddHttpClient();
         }

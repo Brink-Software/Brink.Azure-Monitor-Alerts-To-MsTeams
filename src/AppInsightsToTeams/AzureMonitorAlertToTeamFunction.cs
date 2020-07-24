@@ -71,7 +71,11 @@ namespace AzureMonitorAlertToTeams
                     ac.AlertRule == alert.Data.Essentials.AlertRule 
                     && alert.Data.Essentials.AlertTargetIDs.Contains(ac.AlertTargetID));
             if (alertConfiguration == null)
-                return new BadRequestErrorMessageResult($"No configuration found for Azure Monitor Alert with id {alert.Data.Essentials.AlertId}");
+            {
+                var failure = $"No configuration found for Azure Monitor Alert with id {alert.Data.Essentials.AlertId}";
+                _log.LogError(failure);
+                return new BadRequestErrorMessageResult(failure);
+            }
 
             var teamsMessageTemplate = alertConfiguration.TeamsMessageTemplateAsJson
                 .Replace("[[$.data.essentials.alertRule]]", alert.Data.Essentials.AlertRule, StringComparison.InvariantCultureIgnoreCase)
