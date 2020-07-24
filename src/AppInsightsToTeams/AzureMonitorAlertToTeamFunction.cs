@@ -72,7 +72,7 @@ namespace AzureMonitorAlertToTeams
                     && alert.Data.Essentials.AlertTargetIDs.Contains(ac.AlertTargetID));
             if (alertConfiguration == null)
             {
-                var failure = $"No configuration found for Azure Monitor Alert with id {alert.Data.Essentials.AlertId}";
+                var failure = $"No configuration found for Azure Monitor Alert with rule {alert.Data.Essentials.AlertRule} and targetId {alert.Data.Essentials.AlertTargetIDs.FirstOrDefault()}";
                 _log.LogError(failure);
                 return new BadRequestErrorMessageResult(failure);
             }
