@@ -62,7 +62,8 @@ namespace AzureMonitorAlertToTeams
         {
             var guid = Guid.NewGuid();
 
-            Activity.Current.AddTag("CorrelationId", guid.ToString());
+            if(Activity.Current != null)
+                Activity.Current.AddTag("CorrelationId", guid.ToString());
 
             _alertConfigurations ??= await ReadConfigurationAsync(configuration);
 
@@ -72,14 +73,7 @@ namespace AzureMonitorAlertToTeams
                 requestBody = await streamReader.ReadToEndAsync();
             }
 
-            if (bool.TryParse(Environment.GetEnvironmentVariable("CaptureAlerts"), out var shouldCapture) && shouldCapture)
-            {
-                var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("ConfigurationStorageConnection"));
-                var cloudBlobClient = storageAccount.CreateCloudBlobClient();
-                var container =  cloudBlobClient.GetContainerReference(Environment.GetEnvironmentVariable("ContainerName"));
-                var blob = container.GetBlockBlobReference($"{guid}.json");
-                await blob.UploadTextAsync(requestBody);
-            }
+            await CaptureAlertToFileIfRequested(guid, requestBody);
 
             var alert = JsonConvert.DeserializeObject<Alert>(requestBody);
 
@@ -134,6 +128,18 @@ namespace AzureMonitorAlertToTeams
             }
 
             return new OkResult();
+        }
+
+        private static async Task CaptureAlertToFileIfRequested(Guid guid, string requestBody)
+        {
+            if (bool.TryParse(Environment.GetEnvironmentVariable("CaptureAlerts"), out var shouldCapture) && shouldCapture)
+            {
+                var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("ConfigurationStorageConnection"));
+                var cloudBlobClient = storageAccount.CreateCloudBlobClient();
+                var container = cloudBlobClient.GetContainerReference(Environment.GetEnvironmentVariable("ContainerName"));
+                var blob = container.GetBlockBlobReference($"{guid}.json");
+                await blob.UploadTextAsync(requestBody);
+            }
         }
 
         private static async Task<IEnumerable<AlertConfiguration>> ReadConfigurationAsync(Stream configuration)
