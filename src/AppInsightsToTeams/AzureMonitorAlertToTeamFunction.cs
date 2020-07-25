@@ -68,8 +68,8 @@ namespace AzureMonitorAlertToTeams
             var alert = JsonConvert.DeserializeObject<Alert>(requestBody);
 
             var alertConfiguration = _alertConfigurations.FirstOrDefault(ac => 
-                    ac.AlertRule == alert.Data.Essentials.AlertRule 
-                    && alert.Data.Essentials.AlertTargetIDs.Contains(ac.AlertTargetID));
+                    ac.AlertRule.Equals(alert.Data.Essentials.AlertRule, StringComparison.InvariantCultureIgnoreCase)
+                    && alert.Data.Essentials.AlertTargetIDs.Any(id => id.Equals(ac.AlertTargetID, StringComparison.InvariantCultureIgnoreCase)));
             if (alertConfiguration == null)
             {
                 var failure = $"No configuration found for Azure Monitor Alert with rule {alert.Data.Essentials.AlertRule} and targetId {alert.Data.Essentials.AlertTargetIDs.FirstOrDefault()}";
