@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -19,6 +20,8 @@ using AzureMonitorAlertToTeams.AlertProcessors.ServiceHealth;
 using AzureMonitorAlertToTeams.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -57,12 +60,25 @@ namespace AzureMonitorAlertToTeams
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             [Blob("%ContainerName%/%ConfigurationFilename%", FileAccess.Read, Connection = "ConfigurationStorageConnection")] Stream configuration)
         {
+            var guid = Guid.NewGuid();
+
+            Activity.Current.AddTag("CorrelationId", guid.ToString());
+
             _alertConfigurations ??= await ReadConfigurationAsync(configuration);
 
             string requestBody;
             using (var streamReader = new StreamReader(req.Body))
             {
                 requestBody = await streamReader.ReadToEndAsync();
+            }
+
+            if (bool.TryParse(Environment.GetEnvironmentVariable("CaptureAlerts"), out var shouldCapture) && shouldCapture)
+            {
+                var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("ConfigurationStorageConnection"));
+                var cloudBlobClient = storageAccount.CreateCloudBlobClient();
+                var container =  cloudBlobClient.GetContainerReference(Environment.GetEnvironmentVariable("ContainerName"));
+                var blob = container.GetBlockBlobReference($"{guid}.json");
+                await blob.UploadTextAsync(requestBody);
             }
 
             var alert = JsonConvert.DeserializeObject<Alert>(requestBody);
