@@ -79,9 +79,8 @@ namespace AzureMonitorAlertToTeams
                     && alert.Data.Essentials.AlertTargetIDs.Any(id => id.Equals(ac.AlertTargetID, StringComparison.InvariantCultureIgnoreCase)));
             if (alertConfiguration == null)
             {
-                var failure = $"No configuration found for Azure Monitor Alert with rule {alert.Data.Essentials.AlertRule} and targetId {alert.Data.Essentials.AlertTargetIDs.FirstOrDefault()}";
-                _log.LogError(failure);
-                return new BadRequestErrorMessageResult(failure);
+                _log.LogError($"No configuration found for Azure Monitor Alert with rule {alert.Data.Essentials.AlertRule} and targetId {alert.Data.Essentials.AlertTargetIDs.FirstOrDefault()}");
+                return new BadRequestResult();
             }
 
             var teamsMessageTemplate = alertConfiguration.TeamsMessageTemplateAsJson
@@ -116,6 +115,8 @@ namespace AzureMonitorAlertToTeams
                 _log.LogInformation("No specific alert processor found for monitoring service {MonitoringService} for alert rule {AlertTargetID}", 
                     alert.Data.Essentials.MonitoringService,
                     alertConfiguration.AlertTargetID);
+
+                return new BadRequestResult();
             }
 
             _log.LogDebug(teamsMessageTemplate);
