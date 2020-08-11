@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -18,6 +17,7 @@ using AzureMonitorAlertToTeams.AlertProcessors.Metric;
 using AzureMonitorAlertToTeams.AlertProcessors.ResourceHealth;
 using AzureMonitorAlertToTeams.AlertProcessors.ServiceHealth;
 using AzureMonitorAlertToTeams.Models;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Storage;
@@ -60,11 +60,8 @@ namespace AzureMonitorAlertToTeams
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             [Blob("%ContainerName%/%ConfigurationFilename%", FileAccess.Read, Connection = "ConfigurationStorageConnection")] Stream configuration)
         {
-            var guid = Guid.NewGuid();
-
-            if(Activity.Current != null)
-                Activity.Current.AddTag("CorrelationId", guid.ToString());
-
+            var operationId = req.HttpContext.Features.Get<RequestTelemetry>().Context.Operation.Id;
+            
             _alertConfigurations ??= await ReadConfigurationAsync(configuration);
 
             string requestBody;
@@ -73,7 +70,7 @@ namespace AzureMonitorAlertToTeams
                 requestBody = await streamReader.ReadToEndAsync();
             }
 
-            await CaptureAlertToFileIfRequested(guid, requestBody);
+            await CaptureAlertToFileIfRequested(operationId, requestBody);
 
             var alert = JsonConvert.DeserializeObject<Alert>(requestBody);
 
@@ -108,12 +105,17 @@ namespace AzureMonitorAlertToTeams
             {
                 var processor = _alertProcessors[alert.Data.Essentials.MonitoringService];
                 var alertProcessor = processor.Invoke();
-                _log.LogInformation("Processing monitoring service {MonitoringService} using alert processor of type {ProcessorType}", alertProcessor.GetType().FullName, alert.Data.Essentials.MonitoringService);
+                _log.LogInformation("Processing monitoring service {MonitoringService} using alert processor of type {ProcessorType} for alert rule {AlertTargetID}", 
+                    alert.Data.Essentials.MonitoringService,
+                    alertProcessor.GetType().FullName,
+                    alertConfiguration.AlertTargetID);
                 teamsMessageTemplate = await alertProcessor.CreateTeamsMessageTemplateAsync(teamsMessageTemplate, alertConfiguration, alert);
             }
             else
             {
-                _log.LogInformation("No specific alert processor found for monitoring service {MonitoringService}", alert.Data.Essentials.MonitoringService);
+                _log.LogInformation("No specific alert processor found for monitoring service {MonitoringService} for alert rule {AlertTargetID}", 
+                    alert.Data.Essentials.MonitoringService,
+                    alertConfiguration.AlertTargetID);
             }
 
             _log.LogDebug(teamsMessageTemplate);
@@ -130,14 +132,14 @@ namespace AzureMonitorAlertToTeams
             return new OkResult();
         }
 
-        private static async Task CaptureAlertToFileIfRequested(Guid guid, string requestBody)
+        private static async Task CaptureAlertToFileIfRequested(string operationId, string requestBody)
         {
             if (bool.TryParse(Environment.GetEnvironmentVariable("CaptureAlerts"), out var shouldCapture) && shouldCapture)
             {
                 var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("ConfigurationStorageConnection"));
                 var cloudBlobClient = storageAccount.CreateCloudBlobClient();
                 var container = cloudBlobClient.GetContainerReference(Environment.GetEnvironmentVariable("ContainerName"));
-                var blob = container.GetBlockBlobReference($"{guid}.json");
+                var blob = container.GetBlockBlobReference($"{operationId}.json");
                 await blob.UploadTextAsync(requestBody);
             }
         }
