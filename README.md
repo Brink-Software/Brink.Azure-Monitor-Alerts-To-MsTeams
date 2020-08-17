@@ -79,6 +79,7 @@ Two alert types need additional information, Application Insights and Log Analyt
 ```
 
 ApiKey refers to an App Insights [api key](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-resources-app-insights-keys?view=azure-bot-service-4.0#api-key). That key is used to execute the log query and use the results to populate the template that is used as a message to Microsoft Teams. The key must have permissions to read data.
+If the context is an empty object the results won't be populated in the template.
 
 ### Log Analytics specific context
 
@@ -91,9 +92,7 @@ ApiKey refers to an App Insights [api key](https://docs.microsoft.com/en-us/azur
             },
 ```
 
-Client Secret, Client Id, Tenant Id and Redirect Url refer to values retreived by creating an App Registration in the Azure Active Directory (AAD) that allows the function to
-
-ApiKey refers to an App Insights [api key](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-resources-app-insights-keys?view=azure-bot-service-4.0#api-key). That key is used to xecute the log query and use the results to populate the template that is used as a message to Microsoft Teams. See [the docs](https://dev.loganalytics.io/documentation/Authorization/AAD-Setup) on how to create and link the App Registration.
+Client Secret, Client Id, Tenant Id and Redirect Url refer to values retrieved by creating an App Registration in the Azure Active Directory (AAD) that allows the function to execute the log query and use the results to populate the template that is used as a message to Microsoft Teams. See [the docs](https://dev.loganalytics.io/documentation/Authorization/AAD-Setup) on how to create and link the App Registration.
 
 ### Message templates
 
