@@ -24,10 +24,8 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
 
         public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration,  Alert alert)
         {
-            var configuration = JsonConvert.DeserializeObject<Configuration>(alertConfiguration.Context.ToString());
             var alertContext = JsonConvert.DeserializeObject<AlertContext>(alert.Data.AlertContext.ToString());
-            var result = await FetchLogQueryResultsAsync(configuration, alertContext);
-           
+            
             teamsMessageTemplate = teamsMessageTemplate
                 .Replace("[[$.data.alertContext.Threshold]]", alertContext.Threshold.ToString(), StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[$.data.alertContext.Operator]]", alertContext.Operator, StringComparison.InvariantCultureIgnoreCase)
@@ -53,6 +51,19 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                     .Replace($"[[$.data.alertContext.AffectedConfigurationItems[{index}]]]", configurationItem, StringComparison.InvariantCultureIgnoreCase);
             }
 
+            teamsMessageTemplate = await UpdateMessageWithSearchResultsAsync(teamsMessageTemplate, alertConfiguration, alertContext);
+
+            return teamsMessageTemplate;
+        }
+
+        private async Task<string> UpdateMessageWithSearchResultsAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, AlertContext alertContext)
+        {
+            var configuration = JsonConvert.DeserializeObject<Configuration>(alertConfiguration.Context.ToString());
+
+            if (configuration?.ClientId == null)
+                return teamsMessageTemplate;
+
+            var result = await FetchLogQueryResultsAsync(configuration, alertContext);
             foreach (var table in result.Tables)
             {
                 var tableIndex = Array.IndexOf(result.Tables, table) + 1;
