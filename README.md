@@ -10,6 +10,8 @@ How a notification is presented in Microsoft Teams is flexible and based on a [t
 
 Alert data is sent using the [common schema](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema) to an instance of the Azure Function contained in this repository the data is parsed using a template and send as a [message card](https://docs.microsoft.com/en-us/outlook/actionable-messages/message-card-reference) to a Microsoft Teams channel.
 
+![Flow](/assets/flow.png)
+
 ## Supported Azure Monitor alerts:
 
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#monitoringservice--application-insights)
