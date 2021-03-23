@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,14 +74,21 @@ namespace AzureMonitorAlertToTeams
             await CaptureAlertToFileIfRequested(operationId, requestBody);
 
             var alert = JsonConvert.DeserializeObject<Alert>(requestBody);
+            if (alert?.Data == null)
+            {
+                _log.LogError("Invalid request body: \"{RequestBody}\".", requestBody);
+                throw new ArgumentException("Invalid request", nameof(req));
+            }
 
             var alertConfiguration = _alertConfigurations.FirstOrDefault(ac => 
                     ac.AlertRule.Equals(alert.Data.Essentials.AlertRule, StringComparison.InvariantCultureIgnoreCase)
                     && alert.Data.Essentials.AlertTargetIDs.Any(id => id.Equals(ac.AlertTargetID, StringComparison.InvariantCultureIgnoreCase)));
             if (alertConfiguration == null)
             {
-                _log.LogError($"No configuration found for Azure Monitor Alert with rule {alert.Data.Essentials.AlertRule} and targetId {alert.Data.Essentials.AlertTargetIDs.FirstOrDefault()}");
-                return new BadRequestResult();
+                _log.LogError("No configuration found for Azure Monitor Alert with rule {AlertRule} and targetId of {AlertTargetIDs}", 
+                    alert.Data.Essentials.AlertRule, 
+                    string.Join(", ", alert.Data.Essentials.AlertTargetIDs));
+                throw new InvalidOperationException();
             }
 
             var teamsMessageTemplate = alertConfiguration.TeamsMessageTemplateAsJson
@@ -116,7 +124,7 @@ namespace AzureMonitorAlertToTeams
                     alert.Data.Essentials.MonitoringService,
                     alertConfiguration.AlertTargetID);
 
-                return new BadRequestResult();
+                throw new InvalidOperationException();
             }
 
             _log.LogDebug(teamsMessageTemplate);
@@ -127,7 +135,7 @@ namespace AzureMonitorAlertToTeams
             if (!response.IsSuccessStatusCode)
             {
                 _log.LogError("Posting to teams failed with status code {StatusCode}: {Reason}", response.StatusCode,  response.ReasonPhrase);
-                return new StatusCodeResult((int)response.StatusCode);
+                throw new InvalidOperationException();
             }
 
             return new OkResult();
