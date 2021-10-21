@@ -45,6 +45,7 @@ namespace AzureMonitorAlertToTeams
             _alertProcessors = new Dictionary<string, Func<IAlertProcessor>>
             {
                 {"Application Insights", () => new ApplicationInsightsAlertProcessor(_log, httpClientFactory)},
+                {"Log Alerts V2", () => new ApplicationInsightsAlertProcessor(_log, httpClientFactory)},
                 {"Activity Log - Administrative", () => new ActivityLogAdministrativeAlertProcessor()},
                 {"Activity Log - Policy", () => new ActivityLogPolicyAlertProcessor()},
                 {"Activity Log - Autoscale", () => new ActivityLogAutoscaleAlertProcessor()},
