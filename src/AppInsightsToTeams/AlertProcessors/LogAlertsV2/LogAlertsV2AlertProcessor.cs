@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2.Models;
+using AzureMonitorAlertToTeams.Configurations;
 using AzureMonitorAlertToTeams.Models;
+using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -14,13 +13,12 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
     public class LogAlertsV2AlertProcessor : IAlertProcessor
     {
         private readonly ILogger _log;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private HttpClient _httpClient;
+        private readonly IQueryResultFetcher _queryResultFetcher;
 
-        public LogAlertsV2AlertProcessor(ILogger log, IHttpClientFactory httpClientFactory)
+        public LogAlertsV2AlertProcessor(ILogger log, IQueryResultFetcher queryResultFetcher)
         {
             _log = log;
-            _httpClientFactory = httpClientFactory;
+            _queryResultFetcher = queryResultFetcher;
         }
 
         public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
@@ -70,12 +68,12 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
 
         private async Task<string> UpdateMessageWithSearchResultsAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, AllOf condition, int conditionIndex)
         {
-            var configuration = JsonConvert.DeserializeObject<Configuration>(alertConfiguration.Context.ToString());
+            var configuration = JsonConvert.DeserializeObject<LogAnalyticsConfiguration>(alertConfiguration.Context.ToString());
 
             if (configuration?.ClientId == null)
                 return teamsMessageTemplate;
 
-            var result = await FetchLogQueryResultsAsync(configuration, condition);
+            var result = await _queryResultFetcher.FetchLogQueryResultsAsync(condition.LinkToSearchResultsApi);
             foreach (var table in result.Tables)
             {
                 var tableIndex = Array.IndexOf(result.Tables, table) + 1;
@@ -94,33 +92,6 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
             }
 
             return teamsMessageTemplate;
-        }
-
-        private async Task<ResultSet> FetchLogQueryResultsAsync(Configuration alertConfiguration, AllOf condition)
-        {
-            var formData = new Dictionary<string, string>
-            {
-                {"client_id", alertConfiguration.ClientId},
-                {"redirect_uri", alertConfiguration.RedirectUrl},
-                {"grant_type", "client_credentials"},
-                {"client_secret", alertConfiguration.ClientSecret},
-                {"resource", "https://api.loganalytics.io"}
-            };
-
-            var postResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{alertConfiguration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
-            var tokenData = await postResponse.Content.ReadAsStringAsync();
-            if (!postResponse.IsSuccessStatusCode)
-                throw new HttpRequestException(tokenData);
-
-            var token = JsonConvert.DeserializeObject<dynamic>(tokenData);
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", (string)token.access_token);
-
-            var rawResult = await _httpClient.GetStringAsync(condition.LinkToSearchResultsApi);
-
-            _log.LogDebug($"Data received: {rawResult}");
-
-            var result = JsonConvert.DeserializeObject<ResultSet>(rawResult);
-            return result;
         }
     }
 }

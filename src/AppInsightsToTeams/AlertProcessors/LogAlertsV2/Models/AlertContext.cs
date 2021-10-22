@@ -30,7 +30,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2.Models
         public string Operator { get; set; }
         public string Threshold { get; set; }
         public string TimeAggregation { get; set; }
-        public List<Dimension> Dimensions { get; set; }
+        public List<Dimension> Dimensions { get; set; } = new List<Dimension>();
         public double MetricValue { get; set; }
         public FailingPeriods FailingPeriods { get; set; }
         public string LinkToSearchResultsUi { get; set; }
