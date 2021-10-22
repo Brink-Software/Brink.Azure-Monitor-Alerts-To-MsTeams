@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 using AzureMonitorAlertToTeams.AlertProcessors;
 using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogAdministrative;
 using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogAutoscale;
 using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogPolicy;
 using AzureMonitorAlertToTeams.AlertProcessors.ActivityLogSecurity;
 using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights;
+using AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2;
 using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics;
 using AzureMonitorAlertToTeams.AlertProcessors.Metric;
 using AzureMonitorAlertToTeams.AlertProcessors.ResourceHealth;
@@ -45,7 +44,7 @@ namespace AzureMonitorAlertToTeams
             _alertProcessors = new Dictionary<string, Func<IAlertProcessor>>
             {
                 {"Application Insights", () => new ApplicationInsightsAlertProcessor(_log, httpClientFactory)},
-                {"Log Alerts V2", () => new ApplicationInsightsAlertProcessor(_log, httpClientFactory)},
+                {"Log Alerts V2", () => new LogAlertsV2AlertProcessor(_log, httpClientFactory)},
                 {"Activity Log - Administrative", () => new ActivityLogAdministrativeAlertProcessor()},
                 {"Activity Log - Policy", () => new ActivityLogPolicyAlertProcessor()},
                 {"Activity Log - Autoscale", () => new ActivityLogAutoscaleAlertProcessor()},
