@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2.Models;
 using AzureMonitorAlertToTeams.Models;
@@ -70,7 +72,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
         {
             var configuration = JsonConvert.DeserializeObject<Configuration>(alertConfiguration.Context.ToString());
 
-            if (configuration?.ApiKey == null)
+            if (configuration?.ClientId == null)
                 return teamsMessageTemplate;
 
             var result = await FetchLogQueryResultsAsync(configuration, condition);
@@ -96,22 +98,29 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
 
         private async Task<ResultSet> FetchLogQueryResultsAsync(Configuration alertConfiguration, AllOf condition)
         {
-            var client = _httpClient ?? CreateAndSetClient();
+            var formData = new Dictionary<string, string>
+            {
+                {"client_id", alertConfiguration.ClientId},
+                {"redirect_uri", alertConfiguration.RedirectUrl},
+                {"grant_type", "client_credentials"},
+                {"client_secret", alertConfiguration.ClientSecret},
+                {"resource", "https://api.loganalytics.io"}
+            };
 
-            var rawResult = await client.GetStringAsync(condition.LinkToSearchResultsApi);
+            var postResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{alertConfiguration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
+            var tokenData = await postResponse.Content.ReadAsStringAsync();
+            if (!postResponse.IsSuccessStatusCode)
+                throw new HttpRequestException(tokenData);
+
+            var token = JsonConvert.DeserializeObject<dynamic>(tokenData);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", (string)token.access_token);
+
+            var rawResult = await _httpClient.GetStringAsync(condition.LinkToSearchResultsApi);
 
             _log.LogDebug($"Data received: {rawResult}");
 
             var result = JsonConvert.DeserializeObject<ResultSet>(rawResult);
             return result;
-
-            HttpClient CreateAndSetClient()
-            {
-                _httpClient = _httpClientFactory.CreateClient();
-                _httpClient.DefaultRequestHeaders.Add("x-api-key", alertConfiguration.ApiKey);
-
-                return _httpClient;
-            }
         }
     }
 }
