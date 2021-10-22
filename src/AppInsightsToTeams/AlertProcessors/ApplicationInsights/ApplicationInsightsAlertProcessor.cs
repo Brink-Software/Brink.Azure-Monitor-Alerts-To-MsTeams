@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models;
+using AzureMonitorAlertToTeams.Configurations;
 using AzureMonitorAlertToTeams.Models;
+using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -12,13 +13,12 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
     public class ApplicationInsightsAlertProcessor : IAlertProcessor
     {
         private readonly ILogger _log;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private HttpClient _httpClient;
+        private readonly IQueryResultFetcher _queryResultFetcher;
 
-        public ApplicationInsightsAlertProcessor(ILogger log, IHttpClientFactory httpClientFactory)
+        public ApplicationInsightsAlertProcessor(ILogger log, IAppInsightsQueryResultFetcher queryResultFetcher)
         {
             _log = log;
-            _httpClientFactory = httpClientFactory;
+            _queryResultFetcher = queryResultFetcher;
         }
 
         public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
@@ -58,12 +58,12 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
 
         private async Task<string> UpdateMessageWithSearchResultsAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, AlertContext alertContext)
         {
-            var configuration = JsonConvert.DeserializeObject<Configuration>(alertConfiguration.Context.ToString());
+            var configuration = JsonConvert.DeserializeObject<ApplicationInsightsConfiguration>(alertConfiguration.Context.ToString());
 
             if (configuration?.ApiKey == null)
                 return teamsMessageTemplate;
 
-            var result = await FetchLogQueryResultsAsync(configuration, alertContext);
+            var result = await _queryResultFetcher.FetchLogQueryResultsAsync(alertContext.LinkToSearchResultsApi.ToString());
             foreach (var table in result.Tables)
             {
                 var tableIndex = Array.IndexOf(result.Tables, table) + 1;
@@ -82,26 +82,6 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
             }
 
             return teamsMessageTemplate;
-        }
-
-        private async Task<ResultSet> FetchLogQueryResultsAsync(Configuration alertConfiguration, AlertContext alertContext)
-        {
-            var client = _httpClient ?? CreateAndSetClient();
-
-            var rawResult = await client.GetStringAsync(alertContext.LinkToSearchResultsApi);
-
-            _log.LogDebug($"Data received: {rawResult}");
-
-            var result = JsonConvert.DeserializeObject<ResultSet>(rawResult);
-            return result;
-
-            HttpClient CreateAndSetClient()
-            {
-                _httpClient = _httpClientFactory.CreateClient();
-                _httpClient.DefaultRequestHeaders.Add("x-api-key", alertConfiguration.ApiKey);
-
-                return _httpClient;
-            }
         }
     }
 }
