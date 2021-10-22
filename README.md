@@ -14,6 +14,7 @@ Alert data is sent using the [common schema](https://docs.microsoft.com/en-us/az
 
 ## Supported Azure Monitor alerts:
 
+- [Log Alerts V2](https://docs.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema-definitions#monitoringservice--log-alerts-v2)
 - [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#monitoringservice--application-insights)
 - [Activity Log - Administrative](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#monitoringservice--activity-log---administrative)
 - [Activity Log - Policy](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-common-schema-definitions#monitoringservice--activity-log---policy)
@@ -70,7 +71,7 @@ The function operates based on a configuration file in json format. The json con
 }
 ```
 
-Two alert types need additional information, Application Insights and Log Analytics. This information is defined by the object value of the `Context` property:
+Thre alert types need additional information, Application Insights, Log Alerts V2 and Log Analytics. This information is defined by the object value of the `Context` property:
 
 ### Application Insights specific context
 
@@ -84,7 +85,7 @@ ApiKey refers to an App Insights [api key](https://docs.microsoft.com/en-us/azur
 
 If the context is an empty object the results won't be populated in the template.
 
-### Log Analytics specific context
+### Log Analytics and Log Alerts V2 specific context
 
 ```json
 "Context":  {
