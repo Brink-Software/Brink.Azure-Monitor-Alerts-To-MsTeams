@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.Configurations;
@@ -23,10 +24,13 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
             _httpClientFactory = httpClientFactory;
         }
 
-        public ApplicationInsightsConfiguration Configuration { get; set; }
-
-        public async Task<ResultSet> FetchLogQueryResultsAsync(string url)
+        public async Task<ResultSet> FetchLogQueryResultsAsync(string url, string jsonConfiguration)
         {
+            var configuration = JsonConvert.DeserializeObject<ApplicationInsightsConfiguration>(jsonConfiguration);
+
+            if (configuration?.ApiKey == null)
+                throw new InvalidOperationException("Cannot get ApiKey from configuration {jsonConfiguration}");
+
             var client = _httpClient ?? CreateAndSetClient();
 
             var rawResult = await client.GetStringAsync(url);
@@ -39,7 +43,7 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
             HttpClient CreateAndSetClient()
             {
                 _httpClient = _httpClientFactory.CreateClient();
-                _httpClient.DefaultRequestHeaders.Add("x-api-key", Configuration.ApiKey);
+                _httpClient.DefaultRequestHeaders.Add("x-api-key", configuration.ApiKey);
 
                 return _httpClient;
             }

@@ -1,13 +1,11 @@
 using System;
-using AzureMonitorAlertToTeams.Configurations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureMonitorAlertToTeams.QueryResultFetchers
 {
     public interface IQueryResultFetcherFabric
     {
-        IQueryResultFetcher CreateQueryResultFetcher(ApplicationInsightsConfiguration configuration);
-        IQueryResultFetcher CreateQueryResultFetcher(LogAnalyticsConfiguration configuration);
+        IQueryResultFetcher CreateQueryResultFetcher(string apiUrl);
     }
 
     public class QueryResultFetcherFabric : IQueryResultFetcherFabric
@@ -19,20 +17,12 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
             _serviceProvider = serviceProvider;
         }
 
-        public IQueryResultFetcher CreateQueryResultFetcher(ApplicationInsightsConfiguration configuration)
+        public IQueryResultFetcher CreateQueryResultFetcher(string apiUrl)
         {
-            var service = _serviceProvider.GetService<AppInsightsQueryResultFetcher>();
-            service.Configuration = configuration;
-
-            return service;
-        }
-
-        public IQueryResultFetcher CreateQueryResultFetcher(LogAnalyticsConfiguration configuration)
-        {
-            var service = _serviceProvider.GetService<LogAnalyticsQueryResultFetcher>();
-            service.Configuration = configuration;
-
-            return service;
+            if(apiUrl.Contains("api.applicationinsights.io", StringComparison.InvariantCultureIgnoreCase))
+                return _serviceProvider.GetService<AppInsightsQueryResultFetcher>();
+            
+            return _serviceProvider.GetService<LogAnalyticsQueryResultFetcher>();
         }
     }
 }

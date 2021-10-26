@@ -15,7 +15,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
         private readonly ILogger _log;
         private readonly IQueryResultFetcher _queryResultFetcher;
 
-        public ApplicationInsightsAlertProcessor(ILogger log, IAppInsightsQueryResultFetcher queryResultFetcher)
+        public ApplicationInsightsAlertProcessor(ILogger<ApplicationInsightsAlertProcessor> log, IAppInsightsQueryResultFetcher queryResultFetcher)
         {
             _log = log;
             _queryResultFetcher = queryResultFetcher;
@@ -58,12 +58,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
 
         private async Task<string> UpdateMessageWithSearchResultsAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, AlertContext alertContext)
         {
-            var configuration = JsonConvert.DeserializeObject<ApplicationInsightsConfiguration>(alertConfiguration.Context.ToString());
-
-            if (configuration?.ApiKey == null)
-                return teamsMessageTemplate;
-
-            var result = await _queryResultFetcher.FetchLogQueryResultsAsync(alertContext.LinkToSearchResultsApi.ToString());
+            var result = await _queryResultFetcher.FetchLogQueryResultsAsync(alertContext.LinkToSearchResultsApi.ToString(), alertConfiguration.Context.ToString());
             foreach (var table in result.Tables)
             {
                 var tableIndex = Array.IndexOf(result.Tables, table) + 1;
