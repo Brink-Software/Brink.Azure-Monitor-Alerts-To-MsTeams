@@ -24,6 +24,7 @@ using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -36,23 +37,23 @@ namespace AzureMonitorAlertToTeams
         private IEnumerable<AlertConfiguration> _alertConfigurations;
         private readonly Dictionary<string, Func<IAlertProcessor>> _alertProcessors;
 
-        public AzureMonitorAlertToTeamFunction(IHttpClientFactory httpClientFactory, ILogger<AzureMonitorAlertToTeamFunction> log)
+        public AzureMonitorAlertToTeamFunction(IHttpClientFactory httpClientFactory, ILogger<AzureMonitorAlertToTeamFunction> log, IServiceProvider serviceProvider)
         {
             _httpClient = httpClientFactory.CreateClient();
             _log = log;
 
             _alertProcessors = new Dictionary<string, Func<IAlertProcessor>>
             {
-                {"Application Insights", () => new ApplicationInsightsAlertProcessor(_log, httpClientFactory)},
-                {"Log Alerts V2", () => new LogAlertsV2AlertProcessor(_log, httpClientFactory)},
-                {"Activity Log - Administrative", () => new ActivityLogAdministrativeAlertProcessor()},
-                {"Activity Log - Policy", () => new ActivityLogPolicyAlertProcessor()},
-                {"Activity Log - Autoscale", () => new ActivityLogAutoscaleAlertProcessor()},
-                {"Activity Log - Security", () => new ActivityLogSecurityAlertProcessor()},
-                {"Log Analytics", () => new LogAnalyticsAlertProcessor(_log, httpClientFactory)},
-                {"Platform", () => new MetricAlertProcessor()},
-                {"Resource Health", () => new ResourceHealthAlertProcessor()},
-                {"ServiceHealth", () => new ServiceHealthAlertProcessor()}
+                {"Application Insights", serviceProvider.GetService<ApplicationInsightsAlertProcessor>},
+                {"Log Alerts V2", serviceProvider.GetService<LogAlertsV2AlertProcessor>},
+                {"Activity Log - Administrative", serviceProvider.GetService<ActivityLogAdministrativeAlertProcessor>},
+                {"Activity Log - Policy", serviceProvider.GetService<ActivityLogPolicyAlertProcessor>},
+                {"Activity Log - Autoscale", serviceProvider.GetService<ActivityLogAutoscaleAlertProcessor>},
+                {"Activity Log - Security", serviceProvider.GetService<ActivityLogSecurityAlertProcessor>},
+                {"Log Analytics", serviceProvider.GetService<LogAnalyticsAlertProcessor>},
+                {"Platform", serviceProvider.GetService<MetricAlertProcessor>},
+                {"Resource Health", serviceProvider.GetService<ResourceHealthAlertProcessor>},
+                {"ServiceHealth", serviceProvider.GetService<ServiceHealthAlertProcessor>}
             };
         }
 

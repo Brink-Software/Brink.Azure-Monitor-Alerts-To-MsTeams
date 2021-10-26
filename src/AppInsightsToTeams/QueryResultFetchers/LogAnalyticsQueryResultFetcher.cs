@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -24,20 +25,23 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
             _httpClient = httpClientFactory.CreateClient();
         }
 
-        public LogAnalyticsConfiguration Configuration { get; set; }
-
-        public async Task<ResultSet> FetchLogQueryResultsAsync(string url)
+        public async Task<ResultSet> FetchLogQueryResultsAsync(string url, string jsonConfiguration)
         {
+            var configuration = JsonConvert.DeserializeObject<LogAnalyticsConfiguration>(jsonConfiguration);
+
+            if (configuration?.ClientId == null)
+                throw new InvalidOperationException("Cannot get ClientId from configuration {jsonConfiguration}");
+
             var formData = new Dictionary<string, string>
             {
-                {"client_id", Configuration.ClientId},
-                {"redirect_uri", Configuration.RedirectUrl},
+                {"client_id", configuration.ClientId},
+                {"redirect_uri", configuration.RedirectUrl},
                 {"grant_type", "client_credentials"},
-                {"client_secret", Configuration.ClientSecret},
+                {"client_secret", configuration.ClientSecret},
                 {"resource", "https://api.loganalytics.io"}
             };
 
-            var postResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{Configuration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
+            var postResponse = await _httpClient.PostAsync($"https://login.microsoftonline.com/{configuration.TenantId}/oauth2/token", new FormUrlEncodedContent(formData));
             var tokenData = await postResponse.Content.ReadAsStringAsync();
             if (!postResponse.IsSuccessStatusCode)
                 throw new HttpRequestException(tokenData);

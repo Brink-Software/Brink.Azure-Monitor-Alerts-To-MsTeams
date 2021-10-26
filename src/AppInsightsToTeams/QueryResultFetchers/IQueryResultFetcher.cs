@@ -5,6 +5,6 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
 {
     public interface IQueryResultFetcher
     {
-        Task<ResultSet> FetchLogQueryResultsAsync(string url);
+        Task<ResultSet> FetchLogQueryResultsAsync(string url, string jsonConfiguration);
     }
 }

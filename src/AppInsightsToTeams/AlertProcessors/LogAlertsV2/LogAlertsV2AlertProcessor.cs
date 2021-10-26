@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2.Models;
-using AzureMonitorAlertToTeams.Configurations;
 using AzureMonitorAlertToTeams.Models;
 using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging;
@@ -13,12 +12,12 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
     public class LogAlertsV2AlertProcessor : IAlertProcessor
     {
         private readonly ILogger _log;
-        private readonly IQueryResultFetcher _queryResultFetcher;
+        private readonly IQueryResultFetcherFabric _queryResultFetcherFabric;
 
-        public LogAlertsV2AlertProcessor(ILogger log, IQueryResultFetcher queryResultFetcher)
+        public LogAlertsV2AlertProcessor(ILogger<LogAlertsV2AlertProcessor> log, IQueryResultFetcherFabric queryResultFetcherFabric)
         {
             _log = log;
-            _queryResultFetcher = queryResultFetcher;
+            _queryResultFetcherFabric = queryResultFetcherFabric;
         }
 
         public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
@@ -68,12 +67,8 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
 
         private async Task<string> UpdateMessageWithSearchResultsAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, AllOf condition, int conditionIndex)
         {
-            var configuration = JsonConvert.DeserializeObject<LogAnalyticsConfiguration>(alertConfiguration.Context.ToString());
-
-            if (configuration?.ClientId == null)
-                return teamsMessageTemplate;
-
-            var result = await _queryResultFetcher.FetchLogQueryResultsAsync(condition.LinkToSearchResultsApi);
+            IQueryResultFetcher queryResultFetcher = _queryResultFetcherFabric.CreateQueryResultFetcher(condition.LinkToSearchResultsApi);
+            var result = await queryResultFetcher.FetchLogQueryResultsAsync(condition.LinkToSearchResultsApi, alertConfiguration.Context.ToString());
             foreach (var table in result.Tables)
             {
                 var tableIndex = Array.IndexOf(result.Tables, table) + 1;
