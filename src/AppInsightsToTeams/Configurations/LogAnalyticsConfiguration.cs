@@ -1,6 +1,6 @@
-﻿namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models
+﻿namespace AzureMonitorAlertToTeams.Configurations
 {
-    public class Configuration
+    public class LogAnalyticsConfiguration
     {
         public string ClientSecret { get; set; }
         public string ClientId { get; set; }
