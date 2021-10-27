@@ -38,6 +38,7 @@ namespace AzureMonitorAlertToTeams
             builder.Services.AddSingleton<IQueryResultFetcherFabric, QueryResultFetcherFabric>();
             builder.Services.AddSingleton<IAppInsightsQueryResultFetcher, AppInsightsQueryResultFetcher>();
             builder.Services.AddSingleton<ILogAnalyticsQueryResultFetcher, LogAnalyticsQueryResultFetcher>();
+            builder.Services.AddSingleton<IAlertProcessorRepository, AlertProcessorRepository>();
         }
     }
 }
