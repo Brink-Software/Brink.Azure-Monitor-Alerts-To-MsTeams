@@ -22,9 +22,9 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
         public IQueryResultFetcher CreateQueryResultFetcher(string apiUrl)
         {
             if(apiUrl.Contains("api.applicationinsights.io", StringComparison.InvariantCultureIgnoreCase))
-                return _serviceProvider.GetService<AppInsightsQueryResultFetcher>();
+                return _serviceProvider.GetService<IAppInsightsQueryResultFetcher>();
             
-            return _serviceProvider.GetService<LogAnalyticsQueryResultFetcher>();
+            return _serviceProvider.GetService<ILogAnalyticsQueryResultFetcher>();
         }
     }
 }
