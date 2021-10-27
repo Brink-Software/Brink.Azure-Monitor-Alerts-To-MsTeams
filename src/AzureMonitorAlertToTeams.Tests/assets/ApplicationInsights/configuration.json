@@ -1,0 +1,43 @@
+[
+  {
+    "Context": {
+      "ApiKey": "zzz"
+    },
+    "AlertRule": "Exception",
+    "AlertTargetID": "/subscriptions/xxx/resourcegroups/xxx/providers/microsoft.insights/components/xxx-insights",
+    "TeamsChannelConnectorWebhookUrl": "https://something",
+    "TeamsMessageTemplate": {
+      "@type": "MessageCard",
+      "@context": "https://schema.org/extensions",
+      "summary": "Alert fired for rule [[$.data.essentials.alertRule]]",
+      "themeColor": "0078D7",
+      "title": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].problemId]]",
+      "sections": [
+        {
+          "facts": [
+            {
+              "name": "Application:",
+              "value": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].appType]] ([[$.data.alertContext.SearchResults.Tables[1].Rows[1].version]])"
+            }
+          ],
+          "text": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].outerMessage]]"
+        },
+        {
+          "text": "[[$.data.alertContext.SearchResults.Tables[1].Rows[1].innermostMessage]]"
+        }
+      ],
+      "potentialAction": [
+        {
+          "@type": "OpenUri",
+          "name": "View operation in Portal",
+          "targets": [
+            {
+              "os": "default",
+              "uri": "https://portal.azure.com/#blade/AppInsightsExtension/BladeRedirect/BladeName/searchV1/ResourceId/%2Fsubscriptions%2Fb2yyy%2FresourceGroups%2Frg-yyy-prod%2Fproviders%2Fmicrosoft.insights%2Fcomponents%2Fai-yyyy-prod/BladeInputs/%7B%22tables%22%3A%5B%22availabilityResults%22%2C%22requests%22%2C%22exceptions%22%2C%22pageViews%22%2C%22traces%22%2C%22customEvents%22%2C%22dependencies%22%5D%2C%22filterWhereClause%22%3A%22%7C%20where%20*%20has%20%5C%22[[$.data.alertContext.SearchResults.Tables[1].Rows[1].operation_Id]]%5C%22%7C%20order%20by%20timestamp%20desc%22%2C%22originalParams%22%3A%7B%22eventTypes%22%3A%5B%7B%22type%22%3A%22availabilityResult%22%2C%22tableName%22%3A%22availabilityResults%22%7D%2C%7B%22type%22%3A%22request%22%2C%22tableName%22%3A%22requests%22%7D%2C%7B%22type%22%3A%22exception%22%2C%22tableName%22%3A%22exceptions%22%7D%2C%7B%22type%22%3A%22pageView%22%2C%22tableName%22%3A%22pageViews%22%7D%2C%7B%22type%22%3A%22trace%22%2C%22tableName%22%3A%22traces%22%7D%2C%7B%22type%22%3A%22customEvent%22%2C%22tableName%22%3A%22customEvents%22%7D%2C%7B%22type%22%3A%22dependency%22%2C%22tableName%22%3A%22dependencies%22%7D%5D%2C%22timeContext%22%3A%7B%22durationMs%22%3A86400000%7D%2C%22filter%22%3A%5B%5D%2C%22searchPhrase%22%3A%7B%22originalPhrase%22%3A%22[[$.data.alertContext.SearchResults.Tables[1].Rows[1].operation_Id]]%22%2C%22_tokens%22%3A%5B%7B%22conjunction%22%3A%22and%22%2C%22value%22%3A%22[[$.data.alertContext.SearchResults.Tables[1].Rows[1].operation_Id]]%22%2C%22isNot%22%3Afalse%2C%22kql%22%3A%22%20*%20has%20%5C%22[[$.data.alertContext.SearchResults.Tables[1].Rows[1].operation_Id]]%5C%22%22%7D%5D%7D%2C%22sort%22%3A%22desc%22%7D%7D"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

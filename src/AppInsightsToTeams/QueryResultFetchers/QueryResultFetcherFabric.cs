@@ -1,4 +1,6 @@
 using System;
+using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights;
+using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureMonitorAlertToTeams.QueryResultFetchers

@@ -2,7 +2,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights;
-using AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2;
 using AzureMonitorAlertToTeams.Models;
 using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -12,7 +11,7 @@ using NUnit.Framework;
 
 namespace AzureMonitorAlertToTeams.Tests
 {
-    public class LogAlertsV2AlertProcessorTests
+    public class ApplicationInsightsAlertProcessorTests
     {
         [Test]
         public async Task ShouldProcessAlert()
@@ -50,25 +49,22 @@ namespace AzureMonitorAlertToTeams.Tests
                 }
             }));
 
-            var queryResultFetcherFabric = new Mock<IQueryResultFetcherFabric>();
-            queryResultFetcherFabric.Setup(r => r.CreateQueryResultFetcher(It.Is<string>(s => s.Contains("api.applicationinsights.io")))).Returns(queryResultFetcher.Object);
-
-            var processor = new LogAlertsV2AlertProcessor(new NullLogger<LogAlertsV2AlertProcessor>(), queryResultFetcherFabric.Object);
-            alertProcessorRepository.Setup(r => r.GetAlertProcessor("Log Alerts V2")).Returns(processor);
+            var processor = new ApplicationInsightsAlertProcessor(new NullLogger<ApplicationInsightsAlertProcessor>(), queryResultFetcher.Object);
+            alertProcessorRepository.Setup(r => r.GetAlertProcessor("Application Insights")).Returns(processor);
 
             var functionInstance = new AzureMonitorAlertToTeamFunction(
                 httpClientFactory.Object,
                 new NullLogger<AzureMonitorAlertToTeamFunction>(),
                 alertProcessorRepository.Object);
 
-            var alertJson = await File.ReadAllTextAsync(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\LogAlertsV2\alert.json"));
+            var alertJson = await File.ReadAllTextAsync(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\ApplicationInsights\alert.json"));
 
-            await using var configurationStream = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\LogAlertsV2\configuration.json"));
+            await using var configurationStream = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\ApplicationInsights\configuration.json"));
 
             var (teamsMessage, _) = await functionInstance.ProcessAlertAsync(alertJson, configurationStream);
 
-            Assert.IsTrue(teamsMessage.Contains(appName), "Log Alerts V2 processor not called correctly, or template is incorrect");
-            Assert.IsTrue(teamsMessage.Contains("Alert fired for rule ExceptionMonitoring"), "Generic alert values not parsed correctly, or template is incorrect");
+            Assert.IsTrue(teamsMessage.Contains(appName), "Application Insights processor not called correctly, or template is incorrect");
+            Assert.IsTrue(teamsMessage.Contains("Alert fired for rule Exception"), "Generic alert values not parsed correctly, or template is incorrect");
         }
     }
 }

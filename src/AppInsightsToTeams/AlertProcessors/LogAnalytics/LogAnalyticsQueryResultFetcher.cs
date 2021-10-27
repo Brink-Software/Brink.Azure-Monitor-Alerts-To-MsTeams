@@ -5,10 +5,11 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.Configurations;
 using AzureMonitorAlertToTeams.Models;
+using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace AzureMonitorAlertToTeams.QueryResultFetchers
+namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
 {
     public interface ILogAnalyticsQueryResultFetcher : IQueryResultFetcher
     {
@@ -19,7 +20,7 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
         private readonly HttpClient _httpClient;
         private readonly ILogger _log;
 
-        public LogAnalyticsQueryResultFetcher(ILogger log, IHttpClientFactory httpClientFactory)
+        public LogAnalyticsQueryResultFetcher(ILogger<LogAnalyticsQueryResultFetcher> log, IHttpClientFactory httpClientFactory)
         {
             _log = log;
             _httpClient = httpClientFactory.CreateClient();
