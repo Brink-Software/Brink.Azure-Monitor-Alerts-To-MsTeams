@@ -60,9 +60,9 @@ namespace AzureMonitorAlertToTeams.Tests
                 new NullLogger<AzureMonitorAlertToTeamFunction>(),
                 alertProcessorRepository.Object);
 
-            var alertJson = await File.ReadAllTextAsync(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\logalertv2.json"));
+            var alertJson = await File.ReadAllTextAsync(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\LogAlertsV2\alert.json"));
 
-            await using var configurationStream = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\configuration.json"));
+            await using var configurationStream = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, @"assets\LogAlertsV2\configuration.json"));
 
             var (teamsMessage, _) = await functionInstance.ProcessAlertAsync(alertJson, configurationStream);
 
