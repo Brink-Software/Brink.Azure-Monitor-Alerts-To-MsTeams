@@ -1,0 +1,54 @@
+{
+  "schemaId": "azureMonitorCommonAlertSchema",
+  "data": {
+    "essentials": {
+      "alertId": "/subscriptions/xxx/providers/Microsoft.AlertsManagement/alerts/fbb350ec-24f3-8465-4323-3de3f60736c3",
+      "alertRule": "ExceptionMonitoring",
+      "severity": "Sev1",
+      "signalType": "Log",
+      "monitorCondition": "Fired",
+      "monitoringService": "Log Alerts V2",
+      "alertTargetIDs": [
+        "/subscriptions/xxx/resourcegroups/rg-yyy-prod/providers/microsoft.insights/components/ai-yyy-prod"
+      ],
+      "configurationItems": [
+        "/subscriptions/xxx/resourceGroups/rg-yyy-prod/providers/Microsoft.Insights/components/ai-yyy-prod"
+      ],
+      "originAlertId": "f56e8f82-846e-4845-a4ae-a98ca28981b5",
+      "firedDateTime": "2021-10-26T09:35:13.5077592Z",
+      "description": null,
+      "essentialsVersion": "1.0",
+      "alertContextVersion": "1.0"
+    },
+    "alertContext": {
+      "properties": null,
+      "conditionType": "LogQueryCriteria",
+      "condition": {
+        "windowSize": "PT5M",
+        "allOf": [
+          {
+            "searchQuery": "exceptions\n| where cloud_RoleName != \"\"\n| order by timestamp desc\n| project timestamp , problemId , outerMessage , innermostMessage , appType = cloud_RoleName , version = application_Version , operation_Id",
+            "metricMeasureColumn": null,
+            "targetResourceTypes": null,
+            "operator": "GreaterThan",
+            "threshold": "0",
+            "timeAggregation": "Count",
+            "dimensions": [
+            ],
+            "metricValue": 1.0,
+            "failingPeriods": {
+              "numberOfEvaluationPeriods": 1,
+              "minFailingPeriodsToAlert": 1
+            },
+            "linkToSearchResultsUI": "https://portal.azure.com#@zzz/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2Fb2afbeeb-1a67-4272-aa6e-4c9f4142e269%2FresourceGroups%2Frg-mijnibis-prod%2Fproviders%2FMicrosoft.Insights%2Fcomponents%2Fai-mijnibis-prod%22%7D%5D%7D/q/eJx1j80KwjAQhO8%2BxdqTgpY0gqLQB%2BhBDyIevEiaDFppmpDEP%2FDhTVHxB9zT7jfD7iwuEjZUpvGdG533cCBZm6PaLk2NhdCgbk5JEkXjFByVVwqVhg9CW1LwMirWmQNk%2BBAGLStr6ELF3hwD3Bzeix3iWDUNnDY%2BvJGwdnW1oPz3%2BIBOcD7Gi1I01ZUUbdjt%2Bknjcgv3YIV6ffAOUiKcgaanREBLe5zxbJixIR%2Bv2HTGJ7OMpexRm36a%2FvGN%2BJevfwc%3D/prettify/1/timespan/2021-10-26T09%3a27%3a10.0000000Z%2f2021-10-26T09%3a32%3a10.0000000Z",
+            "linkToFilteredSearchResultsUI": "https://portal.azure.com#@zzz/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2Fb2afbeeb-1a67-4272-aa6e-4c9f4142e269%2FresourceGroups%2Frg-mijnibis-prod%2Fproviders%2FMicrosoft.Insights%2Fcomponents%2Fai-mijnibis-prod%22%7D%5D%7D/q/eJx1j80KwjAQhO8%2BxdqTgpY0gqLQB%2BhBDyIevEiaDFppmpDEP%2FDhTVHxB9zT7jfD7iwuEjZUpvGdG533cCBZm6PaLk2NhdCgbk5JEkXjFByVVwqVhg9CW1LwMirWmQNk%2BBAGLStr6ELF3hwD3Bzeix3iWDUNnDY%2BvJGwdnW1oPz3%2BIBOcD7Gi1I01ZUUbdjt%2Bknjcgv3YIV6ffAOUiKcgaanREBLe5zxbJixIR%2Bv2HTGJ7OMpexRm36a%2FvGN%2BJevfwc%3D/prettify/1/timespan/2021-10-26T09%3a27%3a10.0000000Z%2f2021-10-26T09%3a32%3a10.0000000Z",
+            "linkToSearchResultsAPI": "https://api.applicationinsights.io/v1/apps/zzzz-2430-4e28-bb0b-0b71e86138c9/query?query=exceptions%0A%7C%20where%20cloud_RoleName%20%21%3D%20%22%22%0A%7C%20order%20by%20timestamp%20desc%0A%7C%20project%20timestamp%20%2C%20problemId%20%2C%20outerMessage%20%2C%20innermostMessage%20%2C%20appType%20%3D%20cloud_RoleName%20%2C%20version%20%3D%20application_Version%20%2C%20operation_Id%7C%20where%20timestamp%20between%28datetime%282021-10-26T09%3A27%3A10.0000000Z%29..datetime%282021-10-26T09%3A32%3A10.0000000Z%29%29&timespan=2021-10-26T09%3a27%3a10.0000000Z%2f2021-10-26T09%3a32%3a10.0000000Z",
+            "linkToFilteredSearchResultsAPI": "https://api.applicationinsights.io/v1/apps/zzz-2430-4e28-bb0b-0b71e86138c9/query?query=exceptions%0A%7C%20where%20cloud_RoleName%20%21%3D%20%22%22%0A%7C%20order%20by%20timestamp%20desc%0A%7C%20project%20timestamp%20%2C%20problemId%20%2C%20outerMessage%20%2C%20innermostMessage%20%2C%20appType%20%3D%20cloud_RoleName%20%2C%20version%20%3D%20application_Version%20%2C%20operation_Id%7C%20where%20timestamp%20between%28datetime%282021-10-26T09%3A27%3A10.0000000Z%29..datetime%282021-10-26T09%3A32%3A10.0000000Z%29%29&timespan=2021-10-26T09%3a27%3a10.0000000Z%2f2021-10-26T09%3a32%3a10.0000000Z"
+          }
+        ],
+        "windowStartTime": "2021-10-26T09:27:10Z",
+        "windowEndTime": "2021-10-26T09:32:10Z"
+      }
+    }
+  }
+}
