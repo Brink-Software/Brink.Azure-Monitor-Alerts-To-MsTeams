@@ -5,7 +5,7 @@
     },
     "AlertRule": "ExceptionMonitoring",
     "AlertTargetID": "/subscriptions/xxx/resourcegroups/rg-yyy-prod/providers/microsoft.insights/components/ai-yyy-prod",
-    "TeamsChannelConnectorWebhookUrl": "https://brinkgroepad.webhook.office.com/webhookb2/56cf897c-9b91-474e-93a6-423efb7e5e95@5d324cf4-5d8c-4b4f-8e15-3b6026f4518c/IncomingWebhook/9b1947d7d34e49ad8d2b90487f2e8a42/7f4b9854-9abb-46cf-9a53-60fa2842dce9",
+    "TeamsChannelConnectorWebhookUrl": "https://something",
     "TeamsMessageTemplate": {
       "@type": "MessageCard",
       "@context": "https://schema.org/extensions",

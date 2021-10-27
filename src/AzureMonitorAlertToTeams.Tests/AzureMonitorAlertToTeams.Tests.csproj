@@ -12,10 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="assets\configuration.json">
+    <Content Include="assets\LogAlertsV2\configuration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\logalertv2.json">
+    <Content Include="assets\LogAlertsV2\alert.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
