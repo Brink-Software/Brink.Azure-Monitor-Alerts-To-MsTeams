@@ -1,0 +1,117 @@
+{
+  "schemaId": "azureMonitorCommonAlertSchema",
+  "data": {
+    "essentials": {
+      "alertId": "/subscriptions/xxx/providers/Microsoft.AlertsManagement/alerts/f5559a07-3dea-d9c9-19d1-9e6a8e05407b",
+      "alertRule": "Exception",
+      "severity": "Sev3",
+      "signalType": "Log",
+      "monitorCondition": "Fired",
+      "monitoringService": "Application Insights",
+      "alertTargetIDs": [
+        "/subscriptions/xxx/resourcegroups/xxx/providers/microsoft.insights/components/xxx-insights"
+      ],
+      "configurationItems": [],
+      "originAlertId": "e7b05940-fda4-40db-89d5-e58168e893de",
+      "firedDateTime": "2021-10-27T11:34:44.7012738Z",
+      "description": "",
+      "essentialsVersion": "1.0",
+      "alertContextVersion": "1.1"
+    },
+    "alertContext": {
+      "SearchQuery": "exceptions\n| extend customer = customDimensions.CustomerName\n| extend environment = customDimensions.AspNetCoreEnvironment\n| where environment != \"\"\n| where environment != \"Development\"\n| where problemId != \"System.Web.HttpException at System.Web.Mvc.Controller.HandleUnknownAction\"\n| where problemId != \"System.Web.HttpException at System.Web.Mvc.DefaultControllerFactory.GetControllerInstance\"\n| order by timestamp desc\n| project timestamp , environment, customer, problemId , outerMessage , innermostMessage , appType = cloud_RoleName , version = application_Version , operation_Id",
+      "SearchIntervalStartTimeUtc": "2021-10-27T11:29:13Z",
+      "SearchIntervalEndtimeUtc": "2021-10-27T11:34:13Z",
+      "ResultCount": 4,
+      "LinkToSearchResults": "https://portal.azure.com#@yyy",
+      "LinkToFilteredSearchResultsUI": "https://portal.azure.com#@yyy",
+      "LinkToSearchResultsAPI": "https://api.applicationinsights.io/v1/apps/yyy/",
+      "LinkToFilteredSearchResultsAPI": "https://api.applicationinsights.io/v1/apps/yyy/",
+      "SearchIntervalDurationMin": "5",
+      "AlertType": "Number of results",
+      "IncludeSearchResults": true,
+      "SearchIntervalInMinutes": "5",
+      "SearchResults": {
+        "tables": [
+          {
+            "name": "PrimaryResult",
+            "columns": [
+              {
+                "name": "timestamp",
+                "type": "datetime"
+              },
+              {
+                "name": "environment",
+                "type": "dynamic"
+              },
+              {
+                "name": "customer",
+                "type": "dynamic"
+              },
+              {
+                "name": "problemId",
+                "type": "string"
+              },
+              {
+                "name": "outerMessage",
+                "type": "string"
+              },
+              {
+                "name": "innermostMessage",
+                "type": "string"
+              },
+              {
+                "name": "appType",
+                "type": "string"
+              },
+              {
+                "name": "version",
+                "type": "string"
+              },
+              {
+                "name": "operation_Id",
+                "type": "string"
+              }
+            ],
+            "rows": [
+              [
+                "2021-10-27T11:30:18.4166003Z",
+                "Test",
+                null,
+                "zz",
+                "",
+                "zz-test",
+                "1.2021.299.2",
+                "1b1495925410ab4598f560a8f171a865"
+              ],
+              [
+                "2021-10-27T11:30:18.4114786Z",
+                "Test",
+                null,
+                "System.Net.Http.HttpRequestException at zzz",
+                "Response status code does not indicate success: 400 (Bad Request).",
+                "",
+                "zzz",
+                "1.2021.299.2",
+                "1b1495925410ab4598f560a8f171a865"
+              ]
+            ]
+          }
+        ],
+        "dataSources": [
+          {
+            "resourceId": "/subscriptions/vvv/resourcegroups/vvv/providers/microsoft.insights/components/vvv",
+            "region": "westeurope",
+            "tables": [
+              "exceptions"
+            ]
+          }
+        ]
+      },
+      "Threshold": 0,
+      "Operator": "Greater Than",
+      "ApplicationId": "489b4221-fde6-4819-b739-505de6865843",
+      "IncludedSearchResults": "True"
+    }
+  }
+}

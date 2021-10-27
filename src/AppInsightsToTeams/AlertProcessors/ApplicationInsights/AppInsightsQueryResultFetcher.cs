@@ -3,10 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.Configurations;
 using AzureMonitorAlertToTeams.Models;
+using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace AzureMonitorAlertToTeams.QueryResultFetchers
+namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
 {
     public interface IAppInsightsQueryResultFetcher : IQueryResultFetcher
     {
@@ -18,7 +19,7 @@ namespace AzureMonitorAlertToTeams.QueryResultFetchers
         private HttpClient _httpClient;
         private readonly ILogger _log;
 
-        public AppInsightsQueryResultFetcher(ILogger log, IHttpClientFactory httpClientFactory)
+        public AppInsightsQueryResultFetcher(ILogger<AppInsightsQueryResultFetcher> log, IHttpClientFactory httpClientFactory)
         {
             _log = log;
             _httpClientFactory = httpClientFactory;

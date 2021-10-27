@@ -7,11 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\ApplicationInsights\alert.json" />
+    <None Remove="assets\ApplicationInsights\configuration.json" />
     <None Remove="assets\configuration.json" />
     <None Remove="assets\logalertv2.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="assets\ApplicationInsights\alert.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\ApplicationInsights\configuration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\LogAlertsV2\configuration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
