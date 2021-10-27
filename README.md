@@ -85,7 +85,7 @@ ApiKey refers to an App Insights [api key](https://docs.microsoft.com/en-us/azur
 
 If the context is an empty object the results won't be populated in the template.
 
-### Log Analytics and Log Alerts V2 specific context
+### Log Analytics specific context
 
 ```json
 "Context":  {
@@ -99,6 +99,10 @@ If the context is an empty object the results won't be populated in the template
 Client Secret, Client Id, Tenant Id and Redirect Url refer to values retrieved by creating an App Registration in the Azure Active Directory (AAD) that allows the function to execute the log query and use the results to populate the template that is used as a message to Microsoft Teams. See [the docs](https://dev.loganalytics.io/documentation/Authorization/AAD-Setup) on how to create and link the App Registration.
 
 If the context is an empty object the results won't be populated in the template.
+
+### Log Alerts V2 specific context
+
+This type of alert has the property `linkToSearchResultsAPI` point to either a log analytics api endpoint or an application insights api endpoint, based on the type of resource that is used to create the alert rule. Based on this the context should contain the api key to access the application insights api endpoint or the credentials to connect to the log analytics api endpoint.
 
 ### Message templates
 
