@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models;
-using AzureMonitorAlertToTeams.Configurations;
 using AzureMonitorAlertToTeams.Models;
 using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging;
@@ -70,7 +69,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
                     foreach (var column in columns)
                     {
                         teamsMessageTemplate = teamsMessageTemplate
-                            .Replace($"[[$.data.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column}]]", JsonConvert.SerializeObject(row[Array.IndexOf(columns, column)]), StringComparison.InvariantCultureIgnoreCase);
+                            .Replace($"[[$.data.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column}]]", row[Array.IndexOf(columns, column)].Replace("\"", ""), StringComparison.InvariantCultureIgnoreCase);
                     }
                 }
             }

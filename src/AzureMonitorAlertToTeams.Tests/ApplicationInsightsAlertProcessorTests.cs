@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights;
 using AzureMonitorAlertToTeams.Models;
-using AzureMonitorAlertToTeams.QueryResultFetchers;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
