@@ -5,7 +5,7 @@
       "Default": "Warning",
       "Host.Results": "Information",
       "Host.Aggregator": "Information",
-      "AzureMonitorAlertToTeams.AzureMonitorAlertToTeamFunction": "Information",
+      "AzureMonitorAlertToTeams": "Debug",
       "Function.AzureMonitorAlertToTeams": "Information"
     }
   }

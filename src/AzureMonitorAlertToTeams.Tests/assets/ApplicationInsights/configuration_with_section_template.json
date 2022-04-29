@@ -1,8 +1,5 @@
 [
   {
-    "Context": {
-      "ApiKey": "zzz"
-    },
     "AlertRule": "Exception",
     "AlertTargetID": "/subscriptions/xxx/resourcegroups/xxx/providers/microsoft.insights/components/xxx-insights",
     "TeamsChannelConnectorWebhookUrl": "https://something",
@@ -13,18 +10,7 @@
       "themeColor": "0078D7",
       "title": "[[$.data.alertContext.SearchResults.Tables[0].Rows[0].problemId]]",
       "sections": [
-        {
-          "facts": [
-            {
-              "name": "Application:",
-              "value": "[[$.data.alertContext.SearchResults.Tables[0].Rows[0].appType]] ([[$.data.alertContext.SearchResults.Tables[0].Rows[0].version]])"
-            }
-          ],
-          "text": "[[$.data.alertContext.SearchResults.Tables[0].Rows[0].outerMessage]]"
-        },
-        {
-          "text": "[[$.data.alertContext.SearchResults.Tables[0].Rows[0].innermostMessage]]"
-        }
+        "[[TeamsMessageSectionTemplate]]"
       ],
       "potentialAction": [
         {
@@ -38,6 +24,15 @@
           ]
         }
       ]
+    },
+    "TeamsMessageSectionTemplate": {
+      "facts": [
+        {
+          "name": "Application:",
+          "value": "[[$.appType]] ([[$.version]])"
+        }
+      ],
+      "text": "[[$.outerMessage]]"
     }
   }
 ]

@@ -23,7 +23,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
         public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
         {
             var alertContext = JsonConvert.DeserializeObject<AlertContext>(alert.Data.AlertContext.ToString());
-            
+
             teamsMessageTemplate = teamsMessageTemplate
                 .Replace("[[$.data.alertContext.ConditionType]]", alertContext.ConditionType, StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[$.data.alertContext.Condition.WindowEndTime]]", alertContext.Condition.FormattedWindowEndTime, StringComparison.InvariantCultureIgnoreCase)
@@ -31,7 +31,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
                 .Replace("[[$.data.alertContext.Condition.WindowSize]]", alertContext.Condition.WindowSize, StringComparison.InvariantCultureIgnoreCase);
 
             var index = 1;
-            foreach (var condition in alertContext.Condition.AllOf) 
+            foreach (var condition in alertContext.Condition.AllOf)
             {
                 teamsMessageTemplate = teamsMessageTemplate
                     .Replace($"[[$.data.alertContext.Condition.AllOf[{index}].LinkToFilteredSearchResultsApi]]", condition.LinkToFilteredSearchResultsApi, StringComparison.InvariantCultureIgnoreCase)
