@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AzureMonitorAlertToTeams.Models
@@ -11,5 +12,7 @@ namespace AzureMonitorAlertToTeams.Models
         public string TeamsChannelConnectorWebhookUrl { get; set; }
         public JObject TeamsMessageTemplate { get; set; }
         public string TeamsMessageTemplateAsJson => JsonConvert.SerializeObject(TeamsMessageTemplate);
+        public JObject TeamsMessageSectionTemplate { get; set; }
+        public string TeamsMessageSectionTemplateAsJson => JsonConvert.SerializeObject(TeamsMessageSectionTemplate);
     }
 }

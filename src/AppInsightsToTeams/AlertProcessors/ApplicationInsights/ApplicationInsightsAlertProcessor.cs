@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models;
 using AzureMonitorAlertToTeams.Models;
@@ -20,10 +20,12 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
             _queryResultFetcher = queryResultFetcher;
         }
 
-        public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
+        public ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
         {
             var alertContext = JsonConvert.DeserializeObject<AlertContext>(alert.Data.AlertContext.ToString());
-            
+
+            this._log.LogDebug("Alert context: {alertContext}", alert.Data.AlertContext.ToString());
+
             teamsMessageTemplate = teamsMessageTemplate
                 .Replace("[[$.data.alertContext.Threshold]]", alertContext.Threshold?.ToString(), StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[$.data.alertContext.Operator]]", alertContext.Operator, StringComparison.InvariantCultureIgnoreCase)
@@ -50,29 +52,70 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
                     .Replace($"[[$.data.alertContext.Dimensions[{index}].Value]]", dimension.Value, StringComparison.InvariantCultureIgnoreCase);
             }
 
-            teamsMessageTemplate = await UpdateMessageWithSearchResultsAsync(teamsMessageTemplate, alertConfiguration, alertContext);
+            teamsMessageTemplate = UpdateMessageWithSearchResults(teamsMessageTemplate, alertConfiguration, alertContext);
 
-            return teamsMessageTemplate;
+            this._log.LogDebug("Finished message is: {messageTemplate}", teamsMessageTemplate);
+
+            return new ValueTask<string>(teamsMessageTemplate);
         }
 
-        private async Task<string> UpdateMessageWithSearchResultsAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, AlertContext alertContext)
+        private string UpdateMessageWithSearchResults(string teamsMessageTemplate, AlertConfiguration alertConfiguration, AlertContext alertContext)
         {
-            var result = await _queryResultFetcher.FetchLogQueryResultsAsync(alertContext.LinkToSearchResultsApi.ToString(), alertConfiguration.Context.ToString());
-            foreach (var table in result.Tables)
-            {
-                var tableIndex = Array.IndexOf(result.Tables, table) + 1;
+            // Not sure why this would be needed, as the search results are already part of the alert
+            // var result = await _queryResultFetcher.FetchLogQueryResultsAsync(alertContext.LinkToSearchResultsApi.ToString(), alertConfiguration.Context.ToString());
 
+            List<string> sections = new List<string>();
+
+            var tableIndex = -1;
+            foreach (var table in alertContext.SearchResults.Tables)
+            {
+                tableIndex++;
+
+                var rowIndex = -1;
                 foreach (var row in table.Rows)
                 {
-                    var rowIndex = Array.IndexOf(table.Rows, row) + 1;
+                    rowIndex++;
 
-                    var columns = table.Columns.Select(c => c.Name).ToArray();
-                    foreach (var column in columns)
+                    var sectionTemplate = alertConfiguration.TeamsMessageSectionTemplateAsJson;
+
+                    var columnIndex = -1;
+                    foreach (var column in table.Columns)
                     {
-                        teamsMessageTemplate = teamsMessageTemplate
-                            .Replace($"[[$.data.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column}]]", row[Array.IndexOf(columns, column)].Replace("\"", ""), StringComparison.InvariantCultureIgnoreCase);
+                        columnIndex++;
+
+                        try
+                        {
+                            this._log.LogDebug("Table {tableIndex}, Row {rowIndex}, Column {name}: {value}", tableIndex, rowIndex, column.Name, row[columnIndex]);
+
+                            if (row[columnIndex] is null)
+                            {
+                                continue;
+                            }
+
+                            teamsMessageTemplate = teamsMessageTemplate
+                                .Replace($"[[$.data.alertContext.SearchResults.Tables[{tableIndex}].Rows[{rowIndex}].{column.Name}]]", row[columnIndex].Replace("\"", ""), StringComparison.InvariantCultureIgnoreCase);
+
+                            if (sectionTemplate != null)
+                            {
+                                sectionTemplate = sectionTemplate.Replace($"[[$.{column.Name}]]", row[columnIndex]);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            this._log.LogError(e, "Error replacing column {columnName} with type {columnType}", column.Name, column.Type);
+                        }
+                    }
+
+                    if (sectionTemplate != null)
+                    {
+                        sections.Add(sectionTemplate);
                     }
                 }
+            }
+
+            if (alertConfiguration.TeamsMessageSectionTemplate != null)
+            {
+                teamsMessageTemplate = teamsMessageTemplate.Replace("\"[[TeamsMessageSectionTemplate]]\"", String.Join(", ", sections));
             }
 
             return teamsMessageTemplate;

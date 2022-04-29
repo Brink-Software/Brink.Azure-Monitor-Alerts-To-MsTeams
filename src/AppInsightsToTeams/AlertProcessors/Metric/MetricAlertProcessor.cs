@@ -36,7 +36,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.Metric
                         .Replace($"[[$.data.alertContext.Condition.AllOf[{index}].Dimension[{dimensionIndex}].Value]]", dimension.Value.ToString(), StringComparison.InvariantCultureIgnoreCase);
                 }
             }
-            
+
             return new ValueTask<string>(teamsMessageTemplate);
         }
     }

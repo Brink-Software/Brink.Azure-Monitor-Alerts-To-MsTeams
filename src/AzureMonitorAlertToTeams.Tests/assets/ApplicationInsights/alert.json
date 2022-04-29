@@ -80,7 +80,8 @@
                 null,
                 "zz",
                 "",
-                "zz-test",
+                "",
+                "TEST APP",
                 "1.2021.299.2",
                 "1b1495925410ab4598f560a8f171a865"
               ],
@@ -91,7 +92,7 @@
                 "System.Net.Http.HttpRequestException at zzz",
                 "Response status code does not indicate success: 400 (Bad Request).",
                 "",
-                "zzz",
+                "SECOND APP",
                 "1.2021.299.2",
                 "1b1495925410ab4598f560a8f171a865"
               ]
