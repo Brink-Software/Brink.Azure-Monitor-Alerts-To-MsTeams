@@ -1,29 +1,26 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models;
+﻿using AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models;
 using AzureMonitorAlertToTeams.Models;
 using AzureMonitorAlertToTeams.QueryResultFetchers;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics
 {
     public class LogAnalyticsAlertProcessor : IAlertProcessor
     {
-        private readonly ILogger _log;
         private readonly IQueryResultFetcher _queryResultFetcher;
 
-        public LogAnalyticsAlertProcessor(ILogger<LogAnalyticsAlertProcessor> log, ILogAnalyticsQueryResultFetcher queryResultFetcher)
+        public LogAnalyticsAlertProcessor(ILogAnalyticsQueryResultFetcher queryResultFetcher)
         {
-            _log = log;
             _queryResultFetcher = queryResultFetcher;
         }
 
-        public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration,  Alert alert)
+        public async ValueTask<string> CreateTeamsMessageTemplateAsync(string teamsMessageTemplate, AlertConfiguration alertConfiguration, Alert alert)
         {
             var alertContext = JsonConvert.DeserializeObject<AlertContext>(alert.Data.AlertContext.ToString());
-            
+
             teamsMessageTemplate = teamsMessageTemplate
                 .Replace("[[$.data.alertContext.Threshold]]", alertContext.Threshold.ToString(), StringComparison.InvariantCultureIgnoreCase)
                 .Replace("[[$.data.alertContext.Operator]]", alertContext.Operator, StringComparison.InvariantCultureIgnoreCase)

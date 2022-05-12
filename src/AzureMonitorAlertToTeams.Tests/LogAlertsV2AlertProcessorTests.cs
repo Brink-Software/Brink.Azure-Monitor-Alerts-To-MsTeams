@@ -53,7 +53,7 @@ namespace AzureMonitorAlertToTeams.Tests
             var queryResultFetcherFabric = new Mock<IQueryResultFetcherFabric>();
             queryResultFetcherFabric.Setup(r => r.CreateQueryResultFetcher(It.Is<string>(s => s.Contains("api.applicationinsights.io")))).Returns(queryResultFetcher.Object);
 
-            var processor = new LogAlertsV2AlertProcessor(new NullLogger<LogAlertsV2AlertProcessor>(), queryResultFetcherFabric.Object);
+            var processor = new LogAlertsV2AlertProcessor(queryResultFetcherFabric.Object);
             alertProcessorRepository.Setup(r => r.GetAlertProcessor("Log Alerts V2")).Returns(processor);
 
             var functionInstance = new AzureMonitorAlertToTeamFunction(

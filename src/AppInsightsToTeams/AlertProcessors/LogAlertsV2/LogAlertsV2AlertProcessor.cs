@@ -11,12 +11,10 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAlertsV2
 {
     public class LogAlertsV2AlertProcessor : IAlertProcessor
     {
-        private readonly ILogger _log;
         private readonly IQueryResultFetcherFabric _queryResultFetcherFabric;
 
-        public LogAlertsV2AlertProcessor(ILogger<LogAlertsV2AlertProcessor> log, IQueryResultFetcherFabric queryResultFetcherFabric)
+        public LogAlertsV2AlertProcessor(IQueryResultFetcherFabric queryResultFetcherFabric)
         {
-            _log = log;
             _queryResultFetcherFabric = queryResultFetcherFabric;
         }
 

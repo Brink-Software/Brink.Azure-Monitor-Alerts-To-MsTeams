@@ -48,7 +48,7 @@ namespace AzureMonitorAlertToTeams.Tests
                 }
             }));
 
-            var processor = new ApplicationInsightsAlertProcessor(new NullLogger<ApplicationInsightsAlertProcessor>(), queryResultFetcher.Object);
+            var processor = new ApplicationInsightsAlertProcessor(queryResultFetcher.Object);
             alertProcessorRepository.Setup(r => r.GetAlertProcessor("Application Insights")).Returns(processor);
 
             var functionInstance = new AzureMonitorAlertToTeamFunction(

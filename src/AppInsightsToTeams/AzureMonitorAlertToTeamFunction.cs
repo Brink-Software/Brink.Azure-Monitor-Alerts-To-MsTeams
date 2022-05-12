@@ -5,12 +5,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using AzureMonitorAlertToTeams.Models;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -145,11 +144,12 @@ namespace AzureMonitorAlertToTeams
         {
             if (bool.TryParse(Environment.GetEnvironmentVariable("CaptureAlerts"), out var shouldCapture) && shouldCapture)
             {
-                var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("ConfigurationStorageConnection"));
-                var cloudBlobClient = storageAccount.CreateCloudBlobClient();
-                var container = cloudBlobClient.GetContainerReference(Environment.GetEnvironmentVariable("ContainerName"));
-                var blob = container.GetBlockBlobReference($"{operationId}.json");
-                await blob.UploadTextAsync(requestBody);
+                var blobServiceClient = new BlobServiceClient(Environment.GetEnvironmentVariable("ConfigurationStorageConnection"));
+                var container = blobServiceClient.GetBlobContainerClient(Environment.GetEnvironmentVariable("ContainerName"));
+                var cloudBlobClient = container.GetBlobClient($"{operationId}.json");
+                var content = Encoding.UTF8.GetBytes(requestBody);
+                using var memoryStream = new MemoryStream(content);
+                await cloudBlobClient.UploadAsync(memoryStream);
             }
         }
 
