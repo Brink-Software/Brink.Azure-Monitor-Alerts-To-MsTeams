@@ -4,19 +4,16 @@ using System.Threading.Tasks;
 using AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models;
 using AzureMonitorAlertToTeams.Models;
 using AzureMonitorAlertToTeams.QueryResultFetchers;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights
 {
     public class ApplicationInsightsAlertProcessor : IAlertProcessor
     {
-        private readonly ILogger _log;
         private readonly IQueryResultFetcher _queryResultFetcher;
 
-        public ApplicationInsightsAlertProcessor(ILogger<ApplicationInsightsAlertProcessor> log, IAppInsightsQueryResultFetcher queryResultFetcher)
+        public ApplicationInsightsAlertProcessor(IAppInsightsQueryResultFetcher queryResultFetcher)
         {
-            _log = log;
             _queryResultFetcher = queryResultFetcher;
         }
 

@@ -5,7 +5,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models
 {
     public class AlertContext
     {
-        private readonly CultureInfo _cultureInfo = new CultureInfo("en-US");
+        private readonly CultureInfo _cultureInfo = new ("en-US");
 
         public string SearchQuery { get; set; }
         public string SearchIntervalStartTimeUtc { get; set; }
@@ -20,7 +20,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models
         public long? Threshold { get; set; }
         public string Operator { get; set; }
         public Guid? ApplicationId { get; set; }
-        public Dimension[] Dimensions { get; set; } = new Dimension[0];
+        public Dimension[] Dimensions { get; set; } = Array.Empty<Dimension>();
         public SearchResults SearchResults { get; set; }
         public string IncludeSearchResults { get; set; }
         public string AlertType { get; set; }
@@ -37,21 +37,21 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.ApplicationInsights.Models
 
     public class SearchResults
     {
-        public Table[] Tables { get; set; } = new Table[0];
-        public DataSource[] DataSources { get; set; } = new DataSource[0];
+        public Table[] Tables { get; set; } = Array.Empty<Table>();
+        public DataSource[] DataSources { get; set; } = Array.Empty<DataSource>();
     }
 
     public class DataSource
     {
         public string ResourceId { get; set; }
-        public string[] Tables { get; set; } = new string[0];
+        public string[] Tables { get; set; } = Array.Empty<string>();
     }
 
     public class Table
     {
         public string Name { get; set; }
-        public Column[] Columns { get; set; } = new Column[0];
-        public string[][] Rows { get; set; } = new string[0][];
+        public Column[] Columns { get; set; } = Array.Empty<Column>();
+        public string[][] Rows { get; set; } = Array.Empty<string[]>();
     }
 
     public class Column

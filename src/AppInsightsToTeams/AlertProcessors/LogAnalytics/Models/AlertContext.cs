@@ -6,7 +6,7 @@ namespace AzureMonitorAlertToTeams.AlertProcessors.LogAnalytics.Models
 {
     public class AlertContext
     {
-        private readonly CultureInfo _cultureInfo = new CultureInfo("en-US");
+        private readonly CultureInfo _cultureInfo = new ("en-US");
 
         public string SearchQuery { get; set; }
         public string SearchIntervalStartTimeUtc { get; set; }

@@ -23,12 +23,9 @@ namespace AzureMonitorAlertToTeams
     public class AlertProcessorRepository : IAlertProcessorRepository
     {
         private readonly Dictionary<string, Func<IAlertProcessor>> _alertProcessors;
-        private readonly IServiceProvider _serviceProvider;
 
         public AlertProcessorRepository(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
-
             _alertProcessors = new Dictionary<string, Func<IAlertProcessor>>
             {
                 {"Application Insights", serviceProvider.GetService<ApplicationInsightsAlertProcessor>},

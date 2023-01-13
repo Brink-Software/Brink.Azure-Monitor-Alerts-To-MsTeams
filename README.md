@@ -1,6 +1,6 @@
 # Overview
 
-This repo contains an http triggered Azure Function (V3/.Net Core 3.1) that posts a notification using message cards in a designated Microsoft Teams channel when an Azure Monitor alert is fired.
+This repo contains an http triggered Azure Function (V4/.Net 6.0) that posts a notification using message cards in a designated Microsoft Teams channel when an Azure Monitor alert is fired.
 
 ![GitHub Logo](/assets/alert-message.png)
 
