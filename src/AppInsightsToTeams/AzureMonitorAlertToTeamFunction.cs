@@ -33,10 +33,9 @@ namespace AzureMonitorAlertToTeams
         [FunctionName("AzureMonitorAlertToTeams")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]
-            HttpRequest req,
-            [Blob("%ContainerName%/%ConfigurationFilename%", FileAccess.Read,
-                Connection = "ConfigurationStorageConnection")]
-            Stream configurationStream)
+                HttpRequest req,
+            [Blob("%ContainerName%/%ConfigurationFilename%", FileAccess.Read,Connection = "ConfigurationStorageConnection")]
+                Stream configurationStream)
         {
             var operationId = req.HttpContext.Features.Get<RequestTelemetry>().Context.Operation.Id;
 
@@ -47,15 +46,14 @@ namespace AzureMonitorAlertToTeams
             }
 
             await CaptureAlertToFileIfRequestedAsync(operationId, requestBody);
-            var (teamsMessage, teamsChannelConnectorWebhookUrl) = await ProcessAlertAsync(requestBody, configurationStream);
-            await PostToChannelAsync(teamsChannelConnectorWebhookUrl, teamsMessage);
-
+            await ProcessAlertAsync(requestBody, configurationStream);
+            
             return new OkResult();
         }
 
-        public async Task<(string, string)> ProcessAlertAsync(string alertJson, Stream configuration)
+        public async Task ProcessAlertAsync(string alertJson, Stream configuration)
         {
-            var alertConfigurations = await ReadConfigurationAsync(configuration);
+            var alertConfigurations = await ReadConfigurationsAsync(configuration);
 
             var alert = JsonConvert.DeserializeObject<Alert>(alertJson);
             if (alert?.Data == null)
@@ -64,11 +62,10 @@ namespace AzureMonitorAlertToTeams
                 throw new ArgumentException("Invalid request", nameof(alertJson));
             }
 
-            var alertConfiguration = alertConfigurations.FirstOrDefault(ac =>
-                ac.AlertRule.Equals(alert.Data.Essentials.AlertRule, StringComparison.InvariantCultureIgnoreCase)
-                && alert.Data.Essentials.AlertTargetIDs.Any(id =>
-                    id.Equals(ac.AlertTargetID, StringComparison.InvariantCultureIgnoreCase)));
-            if (alertConfiguration == null)
+            var matchingAlertConfigurations = alertConfigurations.Where(ac =>
+                        ac.AlertRule.Equals(alert.Data.Essentials.AlertRule, StringComparison.InvariantCultureIgnoreCase) &&
+                        alert.Data.Essentials.AlertTargetIDs.Any(id => id.Equals(ac.AlertTargetID, StringComparison.InvariantCultureIgnoreCase)));
+            if (!matchingAlertConfigurations.Any())
             {
                 _log.LogError(
                     "No configuration found for Azure Monitor Alert with rule {AlertRule} and targetId of {AlertTargetIDs}",
@@ -77,6 +74,11 @@ namespace AzureMonitorAlertToTeams
                 throw new InvalidOperationException();
             }
 
+            await Task.WhenAll(matchingAlertConfigurations.Select(ac => CreateAndSendMessageCardAsync(ac, alert)));
+        }
+
+        private async Task CreateAndSendMessageCardAsync(AlertConfiguration alertConfiguration, Alert alert)
+        {
             var teamsMessageTemplate = alertConfiguration.TeamsMessageTemplateAsJson
                 .Replace("[[$.data.essentials.alertRule]]", alert.Data.Essentials.AlertRule,
                     StringComparison.InvariantCultureIgnoreCase)
@@ -126,10 +128,10 @@ namespace AzureMonitorAlertToTeams
 
             _log.LogDebug(teamsMessageTemplate);
 
-            return (teamsMessageTemplate, alertConfiguration.TeamsChannelConnectorWebhookUrl);
+            await PostToChannelAsync(alertConfiguration.TeamsChannelConnectorWebhookUrl, teamsMessageTemplate);
         }
 
-        public async Task PostToChannelAsync(string teamsChannelConnectorWebhookUrl, string teamsMessageTemplate)
+        private async Task PostToChannelAsync(string teamsChannelConnectorWebhookUrl, string teamsMessageTemplate)
         {
             var response = await _httpClient.PostAsync(teamsChannelConnectorWebhookUrl, new StringContent(teamsMessageTemplate, Encoding.UTF8, "application/json"));
 
@@ -152,7 +154,7 @@ namespace AzureMonitorAlertToTeams
             }
         }
 
-        private static async Task<IEnumerable<AlertConfiguration>> ReadConfigurationAsync(Stream configuration)
+        private static async Task<IEnumerable<AlertConfiguration>> ReadConfigurationsAsync(Stream configuration)
         {
             using var sr = new StreamReader(configuration);
 
